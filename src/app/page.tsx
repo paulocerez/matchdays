@@ -3,6 +3,7 @@ import Link from "next/link";
 import { CreatePost } from "~/app/_components/create-post";
 import { getServerAuthSession } from "~/server/auth";
 import { api } from "~/trpc/server";
+import { LogIn } from "lucide-react";
 
 export default async function Home() {
   const hello = await api.post.hello.query({
@@ -16,9 +17,10 @@ export default async function Home() {
         <h1 className="text-5xl font-medium tracking-tight sm:text-[5rem]">
           Matchdays.
         </h1>
-        <div className="flex flex-col items-center gap-2">
-          <p className="text-2xl text-white">
-            {hello ? hello.greeting : "Loading tRPC query..."}
+        <div className="flex flex-col items-center gap-8">
+          <p className="max-w-lg text-center text-xl leading-8 text-white">
+            The Google Calendar integration for your favorite football clubs.
+            Never miss a game again. ⚽️
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4">
@@ -27,9 +29,10 @@ export default async function Home() {
             </p>
             <Link
               href={session ? "/api/auth/signout" : "/api/auth/signin"}
-              className="rounded-lg bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+              className="flex flex-row gap-2 rounded-lg bg-white/10 px-6 py-3 font-semibold no-underline transition hover:bg-white/20"
             >
               {session ? "Sign out" : "Sign in"}
+              <LogIn />
             </Link>
           </div>
         </div>
