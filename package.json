@@ -53,6 +53,6 @@
   },
   "packageManager": "npm@10.1.0",
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   }
 }

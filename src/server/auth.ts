@@ -1,4 +1,6 @@
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { PrismaClient } from "@prisma/client";
+
 import {
   getServerSession,
   type DefaultSession,
@@ -30,6 +32,8 @@ declare module "next-auth" {
   // }
 }
 
+const prisma = new PrismaClient();
+
 /**
  * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
  *
@@ -45,7 +49,7 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   },
-  adapter: PrismaAdapter(db),
+  adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,

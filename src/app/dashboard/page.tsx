@@ -1,5 +1,12 @@
 import React from "react";
 
+// import { CreatePost } from "~/app/_components/create-post";
+// import { api } from "~/trpc/server";
+
 export default function Dashboard() {
-  return <div>Hello</div>;
+  return (
+    <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#4877c7] to-[#0661e8] text-white">
+      <h1>Welcome</h1>
+    </main>
+  );
 }
