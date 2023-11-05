@@ -1,14 +1,14 @@
 import Link from "next/link";
 
-import { CreatePost } from "~/app/_components/create-post";
+// import { CreatePost } from "~/app/_components/create-post";
+// import { api } from "~/trpc/server";
 import { getServerAuthSession } from "~/server/auth";
-import { api } from "~/trpc/server";
 import { LogIn } from "lucide-react";
 
 export default async function Home() {
-  const hello = await api.post.hello.query({
-    text: "my friend, nice to have you here.",
-  });
+  //   const hello = await api.post.hello.query({
+  //     text: "my friend, nice to have you here.",
+  //   });
   const session = await getServerAuthSession();
 
   return (
