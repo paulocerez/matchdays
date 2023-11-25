@@ -2,14 +2,14 @@ import Link from "next/link";
 
 // import { CreatePost } from "~/app/_components/create-post";
 // import { api } from "~/trpc/server";
-import { getServerAuthSession } from "~/server/auth";
+// import { getServerAuthSession } from "~/server/auth";
 import { LogIn } from "lucide-react";
 
-export default async function Home() {
+export default function Home() {
   //   const hello = await api.post.hello.query({
   //     text: "my friend, nice to have you here.",
   //   });
-  const session = await getServerAuthSession();
+  //   const session = await getServerAuthSession();
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#4877c7] to-[#0661e8] text-white">
@@ -25,7 +25,7 @@ export default async function Home() {
 
           <div className="flex flex-col items-center justify-center gap-4">
             <p className="text-center text-2xl text-white">
-              {session && <span>Logged in as {session.user?.name}</span>}
+              {/* {session && <span>Logged in as {session.user?.name}</span>} */}
             </p>
             <Link
               href="/api/auth/signin"
