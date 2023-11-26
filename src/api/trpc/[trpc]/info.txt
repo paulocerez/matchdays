@@ -1,0 +1,1 @@
+Info: The [trpc] directory captures the verb of the procedure and sets it as one of the route parameters

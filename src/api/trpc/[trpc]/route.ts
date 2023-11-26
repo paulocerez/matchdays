@@ -1,3 +1,4 @@
+// fetchRequestHandler needed for the App Router -> Adapter containing the signatures we need for the route handlers
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { type NextRequest } from "next/server";
 
