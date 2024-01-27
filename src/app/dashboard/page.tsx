@@ -9,26 +9,6 @@ const sampleClubs = [
     clubName: "FC Barcelona",
     clubLogo: "logo",
   },
-  {
-    clubId: 1,
-    clubName: "FC Barcelona",
-    clubLogo: "logo",
-  },
-  {
-    clubId: 1,
-    clubName: "FC Barcelona",
-    clubLogo: "logo",
-  },
-  {
-    clubId: 1,
-    clubName: "FC Barcelona",
-    clubLogo: "logo",
-  },
-  {
-    clubId: 1,
-    clubName: "FC Barcelona",
-    clubLogo: "logo",
-  },
 ];
 
 // const isSelected = () => {};

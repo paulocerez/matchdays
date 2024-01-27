@@ -1,1 +1,0 @@
-This folder contains the routers: Routers are collections of procedures (under a sharing namespace) - Imagine this to be a controller in a typical MVC pattern

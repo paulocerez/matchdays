@@ -19,13 +19,10 @@ interface Matchday {
 export default async function scrapeMatchdayData() {
   const response = await axios.get(
     "https://onefootball.com/de/team/fc-barcelona-5/spiele",
-    params,
+    params
   );
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
   const html = response.data;
-
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const $ = cheerio.load(html); //parsing the HTML using cheerio
   // load function loads HTML into Cheerio, returning a Cheerio object which can be used to traverse the DOM and manipulate data
   // Cheerio object is similar to an array of DOM elements, DOM can be further traversed through that object
@@ -47,7 +44,7 @@ export default async function scrapeMatchdayData() {
 
       const competition = $element.find("footer p").text().trim();
       const $teamElements = $element.find(
-        ".SimpleMatchCardTeam_simpleMatchCardTeam__name__7Ud8D",
+        ".SimpleMatchCardTeam_simpleMatchCardTeam__name__7Ud8D"
       );
 
       let teams = "";

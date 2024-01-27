@@ -1,5 +1,5 @@
 import React from "react";
-import MatchdayCard from "~/components/MatchdayCard";
+import MatchdayCard from "@/components/MatchdayCard";
 
 export default function Overview() {
   return (
