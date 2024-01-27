@@ -13,7 +13,7 @@ const sampleClubs = [
 
 // const isSelected = () => {};
 
-export default function Dashboard() {
+export default function Select() {
   return (
     <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#c4cedd] to-[#e0e7f2] text-white">
       <div className="m-10 flex flex-col justify-center space-y-8">
