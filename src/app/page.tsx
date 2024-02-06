@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useEffect } from "react";
 
 // import { CreatePost } from "~/app/_components/create-post";
 // import { api } from "~/trpc/server";
@@ -10,6 +11,7 @@ export default function Home() {
   //     text: "my friend, nice to have you here.",
   //   });
   //   const session = await getServerAuthSession();
+  useEffect(() => {}, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#4877c7] to-[#0661e8] text-white">
