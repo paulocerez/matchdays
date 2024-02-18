@@ -1,18 +1,25 @@
-import React from "react";
-import { useRouter } from "next/router";
+"use client";
+import React, { useState, useEffect } from "react";
 
-export default function MatchdayCard() {
+interface Matchday {
+  id: number;
+  date: string;
+  time: string;
+  teams: string;
+  competition: string;
+}
+
+interface MatchdayCardProps {
+  matchday: Matchday;
+}
+
+export default function MatchdayCard({ matchday }: MatchdayCardProps) {
   return (
     <div>
-      {/* {matchdays.map((matchday, index) => (
-        <div key={index}>
-          <p>Date: {matchday.date}</p>
-          <p>Time: {matchday.time}</p>
-          <p>Teams: {matchday.teams}</p>
-          <p>Competition: {matchday.competition}</p>
-        </div>
-      ))}
-    </div> */}
+      <p>Date: {matchday.date}</p>
+      <p>Time: {matchday.time}</p>
+      <p>Teams: {matchday.teams}</p>
+      <p>Competition: {matchday.competition}</p>
     </div>
   );
 }
