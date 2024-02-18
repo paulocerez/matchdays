@@ -16,6 +16,8 @@ interface Matchday {
   competition: string;
 }
 
+const matchdays: Matchday[] = [];
+
 export default async function scrapeMatchdayData() {
   const response = await axios.get(
     "https://onefootball.com/de/team/fc-barcelona-5/spiele",
@@ -28,7 +30,6 @@ export default async function scrapeMatchdayData() {
   // Cheerio object is similar to an array of DOM elements, DOM can be further traversed through that object
 
   const $matchcard = $("article.SimpleMatchCard_simpleMatchCard__yTuUP");
-  const matchdays: Matchday[] = [];
 
   $matchcard.each((index, element) => {
     const $element = $(element);
@@ -64,9 +65,7 @@ export default async function scrapeMatchdayData() {
       };
 
       matchdays.push(matchday);
-      console.log(matchday);
     }
   });
+  return matchdays;
 }
-
-await scrapeMatchdayData();
