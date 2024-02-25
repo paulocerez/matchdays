@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import MatchdayCard from "@/components/MatchdayCard";
+import { useSession, signIn, signOut } from "next-auth/react";
+import Image from "next/image";
 
 // Define the Matchday type
 interface Matchday {
@@ -15,6 +17,10 @@ export default function Overview() {
   // State consists of array of Matchdays
   const [matchdays, setMatchdays] = useState<Matchday[]>([]);
 
+  const addToCalendar = () => {
+    // ...
+  };
+
   useEffect(() => {
     // api call to api/matchday
     fetch("/api/matchdays")
@@ -26,13 +32,32 @@ export default function Overview() {
 
   return (
     <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#c4cedd] to-[#e0e7f2] text-white">
-      <div className="m-10 flex flex-col justify-center space-y-8">
-        <h1 className="text-5xl font-medium">Matchday Overview</h1>
-      </div>
-      <div>
-        {matchdays.map((matchday) => (
-          <MatchdayCard key={matchday.id} matchday={matchday} />
-        ))}
+      <div className="m-24 flex flex-col justify-center space-y-8">
+        <div className="flex flex-col lg:flex-row justify-center items-center lg:justify-between space-y-8 lg:space-y-0">
+          <h1 className="text-5xl font-medium text-center">
+            Matchday Overview
+          </h1>
+          <div className="flex flex-row space-x-4">
+            <button
+              onClick={() => addToCalendar()}
+              className="flex flex-row items-center bg-blue-500 p-4 rounded-lg"
+            >
+              <Image
+                src="/google_calendar.png"
+                width={20}
+                height={20}
+                alt="GCal Logo"
+                className="mr-2"
+              />
+              Add to calendar
+            </button>
+          </div>
+        </div>
+        <div className="flex flex-col lg:grid lg:grid-cols-3 items-center gap-8">
+          {matchdays.map((matchday) => (
+            <MatchdayCard key={matchday.id} matchday={matchday} />
+          ))}
+        </div>
       </div>
     </main>
   );

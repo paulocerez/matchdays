@@ -69,3 +69,5 @@ export default async function scrapeMatchdayData() {
   });
   return matchdays;
 }
+
+scrapeMatchdayData();

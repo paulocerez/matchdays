@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 interface Matchday {
   id: number;
@@ -15,7 +15,7 @@ interface MatchdayCardProps {
 
 export default function MatchdayCard({ matchday }: MatchdayCardProps) {
   return (
-    <div>
+    <div className="border-4 rounded-lg shadow-xl p-4 text-black bg-slate-100 w-full">
       <p>Date: {matchday.date}</p>
       <p>Time: {matchday.time}</p>
       <p>Teams: {matchday.teams}</p>
