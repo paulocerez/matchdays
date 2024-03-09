@@ -2,14 +2,16 @@
 import Link from "next/link";
 import { useEffect } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-
+import { useRouter } from "next/navigation";
 // import { CreatePost } from "~/app/_components/create-post";
 // import { api } from "~/trpc/server";
 // import { getServerAuthSession } from "~/server/auth";
 import { LogIn } from "lucide-react";
+import { Router } from "express";
 
 export default function Home() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   // session is used to get data when the user signs in through a particular provider -> checking for user being logged in through session
   if (session) {
@@ -24,9 +26,14 @@ export default function Home() {
             <p className="max-w-lg text-center text-xl leading-8 text-white">
               Click below to check out the overview of upcoming matches.
             </p>
+            {session.user && (
+              <p className="max-w-lg text-center text-xl leading-8 text-white">
+                Logged in as {session.user.name}, {session.user.email}
+              </p>
+            )}
             <div className="flex flex-col items-center justify-center gap-4">
               <button
-                onClick={() => signIn("google")}
+                onClick={() => router.push("/overview")}
                 className="flex flex-row gap-2 rounded-lg bg-white/10 px-6 py-3 font-semibold no-underline transition hover:bg-white/20"
               >
                 Overview
