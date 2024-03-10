@@ -6,8 +6,6 @@ import { useRouter } from "next/navigation";
 // import { CreatePost } from "~/app/_components/create-post";
 // import { api } from "~/trpc/server";
 // import { getServerAuthSession } from "~/server/auth";
-import { LogIn } from "lucide-react";
-import { Router } from "express";
 
 export default function Home() {
   const { data: session } = useSession();
