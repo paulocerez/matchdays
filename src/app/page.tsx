@@ -21,14 +21,17 @@ export default function Home() {
           <h1 className="text-5xl font-medium tracking-tight sm:text-[5rem]">
             Matchdays.
           </h1>
-          <button onClick={() => signOut()}>Sign out</button>
+          <button
+            className="flex flex-row gap-2 rounded-lg bg-white/10 px-6 py-3 font-semibold no-underline transition hover:bg-white/20"
+            onClick={() => signOut()}
+          >
+            Sign out
+          </button>
           <div className="flex flex-col items-center gap-8">
-            <p className="max-w-lg text-center text-xl leading-8 text-white">
-              Click below to check out the overview of upcoming matches.
-            </p>
             {session.user && (
               <p className="max-w-lg text-center text-xl leading-8 text-white">
-                Logged in as {session.user.name}, {session.user.email}
+                Hey {session.user.name} 👋🏼, click below to check out the
+                overview of upcoming matches.
               </p>
             )}
             <div className="flex flex-col items-center justify-center gap-4">
