@@ -1,11 +1,17 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import MatchdayCard from "@/app/(components)/MatchdayCard";
+import { useEffect, useState } from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
-import Image from "next/image";
-import { Button } from "../(components)/ui/button";
+import {
+  Table,
+  TableCaption,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+  TableFooter,
+} from "@/components/ui/table";
 
-// Define the Matchday type
 interface Matchday {
   id: number;
   date: string;
@@ -77,34 +83,26 @@ export default function Overview() {
   }, []);
 
   return (
-    <main className="flex min-h-screen justify-center bg-gradient-to-b from-[#c4cedd] to-[#e0e7f2] text-white">
-      <div className="m-24 flex flex-col justify-center space-y-8">
-        <div className="flex flex-col lg:flex-row justify-center items-center lg:justify-between space-y-8 lg:space-y-0">
-          <h1 className="text-5xl font-medium text-center">
-            Matchday Overview
-          </h1>
-          <div className="flex flex-row space-x-4">
-            <Button
-              onClick={() => createCalendarEvents()}
-              className="flex flex-row items-center bg-blue-500 p-4 rounded-lg"
-            >
-              <Image
-                src="/google_calendar.png"
-                width={20}
-                height={20}
-                alt="GCal Logo"
-                className="mr-2"
-              />
-              Add to calendar
-            </Button>
-          </div>
-        </div>
-        <div className="flex flex-col lg:grid lg:grid-cols-3 items-center gap-8">
-          {matchdays.map((matchday) => (
-            <MatchdayCard key={matchday.id} matchday={matchday} />
-          ))}
-        </div>
-      </div>
-    </main>
+    <Table>
+      <TableCaption>Your selected matchdays.</TableCaption>
+      <TableHeader>
+        <TableRow>
+          <TableHead className="w-[100px]">Datetime</TableHead>
+          <TableHead>Competition</TableHead>
+          <TableHead className="text-right">Matchup</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {matchdays.map((matchday) => (
+          <TableRow key={matchday.id}>
+            <TableCell className="font-medium">
+              {matchday.date} {matchday.time}
+            </TableCell>
+            <TableCell>{matchday.competition}</TableCell>
+            <TableCell className="text-right">{matchday.teams}</TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }
