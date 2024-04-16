@@ -50,15 +50,6 @@ export default function Home() {
         });
       });
 
-      //   const request = gapi.client.calendar.events.insert({
-      // 	'calendarId': 'primary',
-      // 	'resource': event
-      //   });
-
-      //   request.execute(function(event) {
-      // 	appendPre('Event created: ' + event.htmlLink);
-      //   });
-
       //   create fetch promise for each matchday object
       const responses = await Promise.all(fetchPromises);
       //   for each HTTP request we check for successful completion
@@ -78,13 +69,6 @@ export default function Home() {
       alert("Failed to add matchdays to Google Calendar.");
     }
   };
-
-  useEffect(() => {
-    fetch("/api/matchdays")
-      .then((response) => response.json())
-      //   update state
-      .then((data) => setMatchdays(data));
-  }, []);
 
   if (session) {
     return (
