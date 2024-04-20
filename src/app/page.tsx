@@ -1,10 +1,10 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Overview from "@/app/(components)/MatchdayOverview";
-import Header from "@/app/(components)/Header";
+import Overview from "@/(components)/MatchdayOverview";
+import Header from "@/(components)/Header";
 import Image from "next/image";
-import { Button } from "./(components)/ui/button";
+import { Button } from "../(components)/ui/button";
 import { useEffect, useState } from "react";
 
 interface Matchday {
@@ -72,9 +72,9 @@ export default function Home() {
 
   if (session) {
     return (
-      <main className="flex min-h-screen flex-col gap-16 text-black">
+      <main className="flex min-h-screen flex-col gap-16 text-black py-12 px-24 lg:px-64">
         <Header />
-        <div className="px-24 md:px-64 space-y-16">
+        <div className="space-y-16">
           <div className="flex flex-col items-center space-y-6  md:flex-row md:justify-between md:items-center">
             <div className="flex flex-col space-y-2 ">
               <h1 className="text-4xl">Welcome, {session.user?.name}. 👋🏼</h1>

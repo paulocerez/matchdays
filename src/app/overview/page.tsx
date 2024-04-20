@@ -1,9 +1,9 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import MatchdayCard from "@/app/(components)/MatchdayCard";
+import MatchdayCard from "@/(components)/MatchdayCard";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Image from "next/image";
-import { Button } from "../(components)/ui/button";
+import { Button } from "../../(components)/ui/button";
 
 // Define the Matchday type
 interface Matchday {

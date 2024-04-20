@@ -1,5 +1,4 @@
 import axios from "axios";
-// import cheerio from "cheerio";
 
 async function scrapeMatchdayData() {
   const response = await axios.get(
