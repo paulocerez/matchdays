@@ -19,6 +19,7 @@ interface Matchday {
 const matchdays: Matchday[] = [];
 
 export default async function scrapeMatchdayData() {
+  matchdays.length = 0;
   const response = await axios.get(
     "https://onefootball.com/de/team/fc-barcelona-5/spiele",
     params
@@ -35,13 +36,34 @@ export default async function scrapeMatchdayData() {
     const $element = $(element);
     const datetimeString = $element.find("time").text().trim();
 
-    const regex = /(\d{2}\.\d{2}\.\d{2})(\d{2}:\d{2})/;
-    const match = datetimeString.match(regex);
+    // regex datetime pattern -> (dd.dd.dd)(dd:dd), d = digit (0-9) - every digit is separated by a literal dot
+    const datetimeRegex = /(\d{2}\.\d{2}\.\d{2})(\d{2}:\d{2})/;
+    const regexMatch = datetimeString.match(datetimeRegex);
+    let currentDate = new Date();
+    let date = currentDate.toLocaleDateString("de-DE");
+    let time =
+      currentDate.toLocaleTimeString("de-DE", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      }) + " CET";
 
-    if (match) {
+    if (regexMatch) {
       const id = Math.floor(Math.random() * 10000);
-      const date = match[1]!;
-      const time = match[2]! + " CET";
+
+      if (regexMatch.length % 2 === 0 && regexMatch.length !== 0) {
+        date = regexMatch[1]!;
+        time = regexMatch[2]! + " CET";
+      } else {
+        let currentDate = new Date();
+        date = currentDate.toLocaleDateString("de-DE");
+        time = regexMatch[2]! + " CET";
+      }
+
+      if (regexMatch && regexMatch.length === 3) {
+        date = regexMatch[1];
+        time = regexMatch[2] + " CET";
+      }
 
       const competition = $element.find("footer p").text().trim();
       const $teamElements = $element.find(
@@ -67,6 +89,7 @@ export default async function scrapeMatchdayData() {
       matchdays.push(matchday);
     }
   });
+  console.log(matchdays);
   return matchdays;
 }
 

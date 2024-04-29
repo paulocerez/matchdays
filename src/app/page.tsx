@@ -40,7 +40,7 @@ export default function Home() {
           },
         };
 
-        return fetch("/api/add-event", {
+        return fetch("/api/calendar", {
           method: "post",
           headers: {
             "Content-Type": "application/json",
