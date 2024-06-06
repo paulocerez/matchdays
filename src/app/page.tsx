@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation";
 import Overview from "@/(components)/MatchdayOverview";
 import Header from "@/(components)/Header";
 import Image from "next/image";
-import { Button } from "../(components)/ui/button";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { Button } from "@/(components)/ui/button";
 
 interface Matchday {
   id: number;

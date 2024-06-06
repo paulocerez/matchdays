@@ -26,7 +26,7 @@ export default function Overview() {
   const { data: session } = useSession();
 
   useEffect(() => {
-    fetch("/api/matchdays")
+    fetch("/api/scrape")
       .then((response) => response.json())
       //   update state
       .then((data) => setMatchdays(data));
