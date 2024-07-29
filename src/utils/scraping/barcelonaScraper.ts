@@ -9,7 +9,6 @@ const params = {
 };
 
 interface Matchday {
-  id: number;
   date: string;
   time: string;
   teams: string;
@@ -26,7 +25,8 @@ export default async function scrapeMatchdayData() {
   );
 
   const html = response.data;
-  const $ = cheerio.load(html); //parsing the HTML using cheerio
+  const $ = cheerio.load(html);
+  //parsing the HTML using cheerio
   // load function loads HTML into Cheerio, returning a Cheerio object which can be used to traverse the DOM and manipulate data
   // Cheerio object is similar to an array of DOM elements, DOM can be further traversed through that object
 
@@ -79,7 +79,6 @@ export default async function scrapeMatchdayData() {
       });
 
       const matchday: Matchday = {
-        id,
         date,
         time,
         teams,

@@ -1,11 +1,10 @@
 "use client";
 import { useSession, signIn, signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import Overview from "@/(components)/MatchdayOverview";
-import Header from "@/(components)/Header";
+import Overview from "@/components/MatchdayOverview";
+import Header from "@/components/Header";
 import Image from "next/image";
 import { useState } from "react";
-import { Button } from "@/(components)/ui/button";
+import { Button } from "@/components/ui/button";
 
 interface Matchday {
   id: number;
@@ -14,11 +13,16 @@ interface Matchday {
   teams: string;
   competition: string;
 }
+3;
 
 export default function Home() {
-  const router = useRouter();
   const { data: session } = useSession();
   const [matchdays, setMatchdays] = useState<Matchday[]>([]);
+
+  //   if (!session || !session.accessToken) {
+  //     console.error("No session or access token available");
+  //     return;
+  //   }
 
   const createCalendarEvents = async () => {
     try {
@@ -34,20 +38,25 @@ export default function Home() {
           },
           end: {
             dateTime: new Date(
-              `${matchday.date}T${matchday.time}`
+              new Date(`${matchday.date}T${matchday.time}`).getTime() +
+                120 * 60000
             ).toISOString(),
             timezone: "Etc/UTC",
           },
         };
 
-        return fetch("/api/calendar", {
-          method: "post",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: "Bearer " + session,
-          },
-          body: JSON.stringify({ event }),
-        });
+        return fetch(
+          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+          {
+            method: "post",
+            headers: {
+              "Content-Type": "application/json",
+              //   Google Provider Token from NextAuth
+              Authorization: "Bearer " + session?.accessToken,
+            },
+            body: JSON.stringify({ event }),
+          }
+        );
       });
 
       //   create fetch promise for each matchday object
@@ -77,7 +86,9 @@ export default function Home() {
         <div className="space-y-16">
           <div className="flex flex-col items-center space-y-6  md:flex-row md:justify-between md:items-center">
             <div className="flex flex-col space-y-2 ">
-              <h1 className="text-4xl">Welcome, {session.user?.name}. 👋🏼</h1>
+              <h1 className="text-4xl">
+                Welcome, {session.user?.name || "my friend"}. 👋🏼
+              </h1>
               <h2 className="text-xl">These are your upcoming matches.</h2>
             </div>
             <div>
