@@ -1,3 +1,5 @@
+// Declaration of tables > database schema
+
 import {
   integer,
   pgTable,
@@ -19,6 +21,7 @@ export const usersTable = pgTable("users_table", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   email: varchar("email", { length: 255 }).notNull().unique(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export const teamsTable = pgTable("teams_table", {
