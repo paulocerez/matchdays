@@ -12,7 +12,10 @@ import {
 
 export const matchesTable = pgTable("matches_table", {
   id: serial("id").primaryKey(),
-  datetime: timestamp("match_datetime", { precision: 6, withTimezone: true }),
+  datetime: timestamp("match_datetime", {
+    precision: 6,
+    withTimezone: true,
+  }).notNull(),
   match: text("match").notNull(),
   competition: varchar("competition").notNull(),
 });

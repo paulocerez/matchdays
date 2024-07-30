@@ -9,7 +9,12 @@ export async function createUser(data: InsertUser) {
 export async function getUserById(
   id: SelectUser["id"]
 ): Promise<Array<{ id: number; name: string; email: string }>> {
-  return db.select().from(usersTable).where(eq(usersTable.id, id));
+  try {
+    return db.select().from(usersTable).where(eq(usersTable.id, id));
+  } catch (error) {
+    console.error("Error fetching users: ", error);
+    throw new Error("Error fetching user data");
+  }
 }
 
 export async function deleteUser(id: SelectUser["id"]) {
