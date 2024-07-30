@@ -1,0 +1,12 @@
+// Migrations (changes to the database)
+
+You can generate migrations using drizzle-kit generate command and then run them using the drizzle-kit migrate command.
+
+These migrations are stored in the drizzle/migrations directory, as specified in your drizzle.config.ts. This directory will contain the SQL files necessary to update your database schema and a meta folder for storing snapshots of the schema at different migration stages.
+
+Run migrations:
+
+npx drizzle-kit migrate
+Alternatively, you can push changes directly to the database using Drizzle kit push command:
+
+npx drizzle-kit push
