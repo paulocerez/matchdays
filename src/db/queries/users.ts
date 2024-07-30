@@ -1,6 +1,6 @@
 import { db } from "@/db/index";
-import { InsertUser, SelectUser, usersTable } from "../schema";
 import { eq } from "drizzle-orm";
+import { InsertUser, SelectUser, usersTable } from "../schema";
 
 export async function createUser(data: InsertUser) {
   await db.insert(usersTable).values(data);

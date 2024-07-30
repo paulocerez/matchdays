@@ -1,4 +1,4 @@
-import { Button } from "@/(components)/ui/button";
+import { Button } from "@/components/ui/button";
 import { signOut, useSession } from "next-auth/react";
 import router from "next/router";
 import React from "react";

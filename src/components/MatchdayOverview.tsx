@@ -11,14 +11,7 @@ import {
   TableCell,
   TableFooter,
 } from "@/components/ui/table";
-
-interface Matchday {
-  id: number;
-  date: string;
-  time: string;
-  teams: string;
-  competition: string;
-}
+import { Matchday } from "@/types/matchdays";
 
 export default function Overview() {
   // State consists of array of Matchdays
