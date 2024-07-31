@@ -5,3 +5,7 @@ export interface Matchday {
   teams: string;
   competition: string;
 }
+
+export interface Session {
+  accessToken?: string;
+}

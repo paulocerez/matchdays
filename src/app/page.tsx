@@ -5,79 +5,12 @@ import Header from "@/components/Header";
 import Image from "next/image";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-
-interface Matchday {
-  id: number;
-  date: string;
-  time: string;
-  teams: string;
-  competition: string;
-}
-3;
+import { Matchday } from "@/types/matchdays";
+import { createCalendarEvents } from "@/lib/createCalendarEvents";
 
 export default function Home() {
   const { data: session } = useSession();
   const [matchdays, setMatchdays] = useState<Matchday[]>([]);
-
-  //   if (!session || !session.accessToken) {
-  //     console.error("No session or access token available");
-  //     return;
-  //   }
-
-  const createCalendarEvents = async () => {
-    try {
-      const fetchPromises = matchdays.map((matchday) => {
-        const event = {
-          summary: matchday.teams,
-          description: matchday.teams + matchday.competition + matchday.date,
-          start: {
-            dateTime: new Date(
-              `${matchday.date}T${matchday.time}`
-            ).toISOString(),
-            timezone: "Etc/UTC",
-          },
-          end: {
-            dateTime: new Date(
-              new Date(`${matchday.date}T${matchday.time}`).getTime() +
-                120 * 60000
-            ).toISOString(),
-            timezone: "Etc/UTC",
-          },
-        };
-
-        return fetch(
-          "https://www.googleapis.com/calendar/v3/calendars/primary/events",
-          {
-            method: "post",
-            headers: {
-              "Content-Type": "application/json",
-              //   Google Provider Token from NextAuth
-              Authorization: "Bearer " + session?.accessToken,
-            },
-            body: JSON.stringify({ event }),
-          }
-        );
-      });
-
-      //   create fetch promise for each matchday object
-      const responses = await Promise.all(fetchPromises);
-      //   for each HTTP request we check for successful completion
-      const results = await Promise.all(
-        responses.map((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          return response.json();
-        })
-      );
-
-      console.log(results);
-      alert("Matchdays added to Google Calendar!");
-    } catch (error) {
-      console.error("Couldn't create an event due to: ", error);
-      alert("Failed to add matchdays to Google Calendar.");
-    }
-  };
 
   if (session) {
     return (
@@ -93,8 +26,9 @@ export default function Home() {
             </div>
             <div>
               <Button
+                type="button"
                 variant="secondary"
-                onClick={() => createCalendarEvents()}
+                onClick={() => createCalendarEvents(matchdays, session)}
                 className="flex flex-row items-center p-4 rounded-lg"
               >
                 <Image
