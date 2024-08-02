@@ -14,15 +14,17 @@ export default function Home() {
 
   if (session) {
     return (
-      <main className="flex min-h-screen flex-col gap-16 text-black py-12 px-24 lg:px-64">
+      <main className="flex min-h-screen flex-col gap-16 text-black py-12 px-8 lg:px-64">
         <Header />
         <div className="space-y-16">
           <div className="flex flex-col items-center space-y-6  md:flex-row md:justify-between md:items-center">
             <div className="flex flex-col space-y-2 ">
-              <h1 className="text-4xl">
+              <h1 className="text-2xl lg:text-4xl">
                 Welcome, {session.user?.name || "my friend"}. 👋🏼
               </h1>
-              <h2 className="text-xl">These are your upcoming matches.</h2>
+              <h2 className="text-lg lg:text-xl">
+                These are your upcoming matches.
+              </h2>
             </div>
             <div>
               <Button
