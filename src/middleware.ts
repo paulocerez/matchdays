@@ -1,4 +1,2 @@
 // authentication middleware
-export { default } from "next-auth/middleware";
-
-export const config = { matcher: ["/login"] };
+export { auth as middleware } from "@/../auth";

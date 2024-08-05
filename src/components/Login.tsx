@@ -15,12 +15,19 @@ export async function Login() {
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4">
-            <button
-              onClick={() => signIn("google")}
-              className="flex flex-row gap-2 rounded-lg bg-white/10 px-6 py-3 font-semibold no-underline transition hover:bg-white/20"
+            <form
+              action={async () => {
+                "use server";
+                await signIn("google");
+              }}
             >
-              Sign in using Google
-            </button>
+              <button
+                type="submit"
+                className="flex flex-row gap-2 rounded-lg bg-white/10 px-6 py-3 font-semibold no-underline transition hover:bg-white/20"
+              >
+                Sign in using Google
+              </button>
+            </form>
           </div>
         </div>
       </div>

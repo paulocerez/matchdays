@@ -6,6 +6,6 @@ export interface Matchday {
   competition: string;
 }
 
-export interface Session {
-  accessToken?: string;
-}
+// export interface Session {
+//   accessToken?: string;
+// }
