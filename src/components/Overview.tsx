@@ -4,7 +4,7 @@ import { Button } from "./ui/button";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { Matchday, Session } from "@/types/matchdays";
+import { Matchday } from "@/types/matchdays";
 import MatchdayOverview from "./MatchdayOverview";
 
 export async function Overview() {
@@ -27,9 +27,7 @@ export async function Overview() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() =>
-                createCalendarEvents(matchdays, session as Session)
-              }
+              onClick={() => createCalendarEvents(matchdays)}
               className="flex flex-row items-center p-4 rounded-lg"
             >
               <Image
