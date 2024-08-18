@@ -1,24 +1,60 @@
-import { db } from "@/db/index";
-import { eq } from "drizzle-orm";
-import { InsertMatch, SelectMatch, matchesTable } from "../schema";
+import { eq, and } from "drizzle-orm";
+import { db } from "..";
+import { InsertMatch, matchesTable, SelectMatch } from "../schema";
+import handleDatabaseOperation from "../operations/handleDatabaseOperations";
 
-export async function createMatch(data: InsertMatch) {
-  await db.insert(matchesTable).values(data);
+export async function findMatchInDatabase(
+  datetime: Date,
+  match: string
+): Promise<SelectMatch | null> {
+  const result = await db
+    .select()
+    .from(matchesTable)
+    .where(
+      and(eq(matchesTable.datetime, datetime), eq(matchesTable.match, match))
+    )
+    .execute();
+
+  return result.length > 0 ? result[0] : null;
 }
 
-export async function getAllMatches() {
-  return db.select().from(matchesTable);
+export async function insertMatchInDatabase(
+  match: InsertMatch
+): Promise<SelectMatch> {
+  return handleDatabaseOperation(async () => {
+    const result = await db
+      .insert(matchesTable)
+      .values(match)
+      .returning("*")
+      .execute();
+    return result[0];
+  }, "Error inserting match");
 }
 
-export async function getMatchesById(
-  id: SelectMatch["id"]
-): Promise<
-  Array<{ id: number; datetime: Date; match: string; competition: string }>
-> {
-  try {
-    return db.select().from(matchesTable).where(eq(matchesTable.id, id));
-  } catch (error) {
-    console.error("Error fetching matches: ", error);
-    throw new Error("Error fetching matches");
-  }
+export async function updateMatchInDatabase(
+  id: number,
+  match: InsertMatch
+): Promise<SelectMatch> {
+  return handleDatabaseOperation(async () => {
+    await db
+      .update(matchesTable)
+      .set(match)
+      .where(eq(matchesTable.id, id))
+      .execute();
+    return { id, ...match };
+  }, "Error updating match");
+}
+
+export async function upsertMatchday(match: InsertMatch): Promise<SelectMatch> {
+  return handleDatabaseOperation(async () => {
+    const existingMatch = await findMatchInDatabase(
+      match.datetime,
+      match.match
+    );
+    if (existingMatch) {
+      return await updateMatchInDatabase(existingMatch.id, match);
+    } else {
+      return await insertMatchInDatabase(match);
+    }
+  }, "Error upserting match");
 }
