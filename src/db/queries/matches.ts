@@ -1,7 +1,34 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql, gt } from "drizzle-orm";
 import { db } from "..";
 import { InsertMatch, matchesTable, SelectMatch } from "../schema";
 import handleDatabaseOperation from "../operations/handleDatabaseOperations";
+
+/**
+ *
+ * @returns an array of all matches in the matches table.
+ */
+export async function getAllMatches(): Promise<SelectMatch[]> {
+  return handleDatabaseOperation(async () => {
+    const result = await db.select().from(matchesTable);
+    return result as SelectMatch[];
+  }, "Error fetching all matches");
+}
+
+/**
+ * Fetches all matches that have a datetime ahead of the current datetime.
+ * @returns an array of future matches.
+ */
+
+export async function getFutureMatches(): Promise<SelectMatch[]> {
+  return handleDatabaseOperation(async () => {
+    const currentDatetime = new Date();
+    const result = await db
+      .select()
+      .from(matchesTable)
+      .where(gt(matchesTable.datetime, currentDatetime));
+    return result as SelectMatch[];
+  }, "Error fetching future matches");
+}
 
 export async function findMatchInDatabase(
   datetime: Date,
@@ -22,11 +49,7 @@ export async function insertMatchInDatabase(
   match: InsertMatch
 ): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
-    const result = await db
-      .insert(matchesTable)
-      .values(match)
-      .returning("*")
-      .execute();
+    const result = await db.insert(matchesTable).values(match).returning();
     return result[0];
   }, "Error inserting match");
 }
