@@ -1,7 +1,7 @@
 import { eq, and, sql, gt } from "drizzle-orm";
 import { db } from "..";
 import { InsertMatch, matchesTable, SelectMatch } from "../schema";
-import handleDatabaseOperation from "../operations/handleDatabaseOperations";
+import handleDatabaseOperation from "../operations/handleDatabaseOperation";
 
 /**
  *
@@ -45,16 +45,14 @@ export async function findMatchInDatabase(
   return result.length > 0 ? result[0] : null;
 }
 
-export async function insertMatchInDatabase(
-  match: InsertMatch
-): Promise<SelectMatch> {
+export async function insertMatch(match: InsertMatch): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
     const result = await db.insert(matchesTable).values(match).returning();
     return result[0];
   }, "Error inserting match");
 }
 
-export async function updateMatchInDatabase(
+export async function updateMatch(
   id: number,
   match: InsertMatch
 ): Promise<SelectMatch> {
@@ -68,16 +66,16 @@ export async function updateMatchInDatabase(
   }, "Error updating match");
 }
 
-export async function upsertMatchday(match: InsertMatch): Promise<SelectMatch> {
+export async function upsertMatch(match: InsertMatch): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
     const existingMatch = await findMatchInDatabase(
       match.datetime,
       match.match
     );
     if (existingMatch) {
-      return await updateMatchInDatabase(existingMatch.id, match);
+      return await updateMatch(existingMatch.id, match);
     } else {
-      return await insertMatchInDatabase(match);
+      return await insertMatch(match);
     }
   }, "Error upserting match");
 }
