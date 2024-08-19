@@ -30,7 +30,7 @@ export async function getFutureMatches(): Promise<SelectMatch[]> {
   }, "Error fetching future matches");
 }
 
-export async function findMatchInDatabase(
+export async function findMatch(
   datetime: Date,
   match: string
 ): Promise<SelectMatch | null> {
@@ -68,10 +68,7 @@ export async function updateMatch(
 
 export async function upsertMatch(match: InsertMatch): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
-    const existingMatch = await findMatchInDatabase(
-      match.datetime,
-      match.match
-    );
+    const existingMatch = await findMatch(match.datetime, match.match);
     if (existingMatch) {
       return await updateMatch(existingMatch.id, match);
     } else {

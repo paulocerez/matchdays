@@ -1,7 +1,7 @@
 /**
  * File to schedule scraping process using croner library.
  */
-import { upsertMatchday } from "@/db/queries/matches";
+import { upsertMatch } from "@/db/queries/matches";
 import scrapeMatchdayData from "@/utils/scraping/barcelonaScraper";
 import { Cron } from "croner";
 import { datetime } from "drizzle-orm/mysql-core";
@@ -25,7 +25,7 @@ const timedScraper = Cron(
         match: matches[i].teams,
         competition: matches[i].competition,
       };
-      await upsertMatchday(matchData);
+      await upsertMatch(matchData);
     }
     console.log("Matches have been scraped at and upserted at: " + new Date());
   }
