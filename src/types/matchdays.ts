@@ -1,5 +1,5 @@
 export interface Matchday {
-  id: number;
+  id?: number;
   date: string;
   time: string;
   teams: string;

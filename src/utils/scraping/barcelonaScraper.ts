@@ -1,3 +1,4 @@
+import { Matchday } from "@/types/matchdays";
 import axios from "axios";
 import * as cheerio from "cheerio";
 
@@ -8,16 +9,8 @@ const params = {
   },
 };
 
-interface Matchday {
-  date: string;
-  time: string;
-  teams: string;
-  competition: string;
-}
-
-const matchdays: Matchday[] = [];
-
-export default async function scrapeMatchdayData() {
+export default async function scrapeMatchdayData(): Promise<Matchday[]> {
+  const matchdays: Matchday[] = [];
   matchdays.length = 0;
   const response = await axios.get(
     "https://onefootball.com/de/team/fc-barcelona-5/spiele",
@@ -88,8 +81,5 @@ export default async function scrapeMatchdayData() {
       matchdays.push(matchday);
     }
   });
-  console.log(matchdays);
   return matchdays;
 }
-
-scrapeMatchdayData();

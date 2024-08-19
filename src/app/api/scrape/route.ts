@@ -4,19 +4,16 @@ import * as schema from "@/db/schema";
 import { drizzle } from "drizzle-orm/vercel-postgres";
 import { sql } from "@vercel/postgres";
 
-const db = drizzle(sql, { schema });
+/**
+ * Manual call to scrape matches from Onefootball
+ * @param req
+ * @returns
+ */
 
 export async function GET(req: NextRequest) {
   try {
-    // call the function to scrape the matchdays
+    //
     const matchdays = await scrapeMatchdayData();
-    console.log(matchdays.length);
-
-    // insert matchdays into database
-    // ...
-
-    // call the function to insert events in calendar
-    // ...
 
     console.log(matchdays);
     return NextResponse.json(matchdays, { status: 200 });
