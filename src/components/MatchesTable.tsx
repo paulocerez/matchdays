@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Matchday } from "@/types/matchdays";
 
-export default function Overview() {
+export default function MatchesTable() {
   // State consists of array of Matchdays
   const [matchdays, setMatchdays] = useState<Matchday[]>([]);
   const { data: session } = useSession();

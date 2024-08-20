@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { Matchday } from "@/types/matchdays";
-import MatchdayOverview from "./MatchdayOverview";
+import MatchdayOverview from "./MatchesTable";
 
 export async function Overview() {
   const { data: session } = useSession();

@@ -1,5 +1,4 @@
 "use client";
-import Overview from "@/components/MatchdayOverview";
 import Header from "@/components/Header";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -8,25 +7,10 @@ import { Matchday } from "@/types/matchdays";
 import { createCalendarEvents } from "@/lib/createCalendarEvents";
 import { auth } from "../../../auth";
 import { useRouter } from "next/router";
+import MatchesTable from "@/components/MatchesTable";
 
-async function Home() {
+export default async function Home() {
   const session = await auth();
-  const [matchdays, setMatchdays] = useState<Matchday[]>([]);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (status === "authenticated") {
-      router.push("/overview/page.tsx");
-    }
-  }, [status]);
-
-  if (status === "loading") {
-    return <div>Loading...</div>;
-  }
-
-  if (!session) {
-    return <div>You are not signed in!</div>;
-  }
 
   return (
     <main className="flex min-h-screen flex-col gap-16 text-black py-12 px-8 lg:px-64">
@@ -45,7 +29,6 @@ async function Home() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => createCalendarEvents(matchdays)}
               className="flex flex-row items-center p-4 rounded-lg"
             >
               <Image
@@ -60,7 +43,7 @@ async function Home() {
           </div>
         </div>
         <div>
-          <Overview />
+          <MatchesTable />
         </div>
       </div>
     </main>

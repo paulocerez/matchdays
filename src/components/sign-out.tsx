@@ -1,16 +1,19 @@
-"use server";
+import { handleSignOut } from "@/actions/handleSignOut";
+import { Button } from "./ui/button";
 import { signOut } from "../../auth";
 
 export default function SignOut() {
   return (
+    // <Button type="button" variant="secondary" onClick={handleSignOut}>
+    //   Sign Out
+    // </Button>
     <form
       action={async () => {
         "use server";
         await signOut();
       }}
-      className="flex flex-row gap-2 rounded-lg bg-white/10 px-6 py-3 font-semibold no-underline transition hover:bg-white/20"
     >
-      <button type="submit">Signout</button>
+      <button type="submit">Sign Out</button>
     </form>
   );
 }
