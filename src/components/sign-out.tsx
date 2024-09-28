@@ -1,19 +1,18 @@
-import { handleSignOut } from "@/actions/handleSignOut";
-import { Button } from "./ui/button";
 import { signOut } from "../../auth";
 
-export default function SignOut() {
+export function SignOut() {
   return (
-    // <Button type="button" variant="secondary" onClick={handleSignOut}>
-    //   Sign Out
-    // </Button>
     <form
       action={async () => {
-        "use server";
         await signOut();
       }}
     >
-      <button type="submit">Sign Out</button>
+      <button
+        type="submit"
+        className="flex items-center justify-center border p-2.5 rounded-md hover:bg-gray-100 bg-white dark:bg-black"
+      >
+        Log out
+      </button>
     </form>
   );
 }

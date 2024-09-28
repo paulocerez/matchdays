@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@auth/drizzle-adapter": "^1.5.3",
     "@googleapis/calendar": "^9.7.0",
     "@next/env": "^14.2.5",
     "@radix-ui/react-slot": "^1.0.2",
@@ -20,7 +21,7 @@
     "clsx": "^2.1.0",
     "croner": "^8.1.1",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.32.1",
+    "drizzle-orm": "^0.32.2",
     "googleapis": "^131.0.0",
     "lucide-react": "^0.303.0",
     "next": "^14.2.5",
@@ -39,7 +40,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
-    "drizzle-kit": "^0.23.1",
+    "drizzle-kit": "^0.23.2",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
     "postcss": "^8",

@@ -1,5 +1,3 @@
-// Declaration of tables > database schema
-
 import {
   integer,
   pgTable,
@@ -18,13 +16,6 @@ export const matchesTable = pgTable("matches_table", {
   }).notNull(),
   match: text("match").notNull(),
   competition: varchar("competition").notNull(),
-});
-
-export const usersTable = pgTable("users_table", {
-  id: serial("id").primaryKey(),
-  name: text("name").notNull(),
-  email: varchar("email", { length: 255 }).notNull().unique(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 
 export const teamsTable = pgTable("teams_table", {
@@ -48,10 +39,6 @@ export const userTeamsTable = pgTable(
     };
   }
 );
-// create a composite primary key using multiple fields, which ensures that the combination of these fields is unique for every record in the table
-
-export type InsertUser = typeof usersTable.$inferInsert;
-export type SelectUser = typeof usersTable.$inferSelect;
 
 export type InsertTeam = typeof teamsTable.$inferInsert;
 export type SelectTeam = typeof teamsTable.$inferSelect;

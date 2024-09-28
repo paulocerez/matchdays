@@ -1,8 +1,10 @@
 import { Matchday } from "@/types/matchdays";
-import { Session } from "next-auth";
+import { auth } from "../../auth";
 
-export async function createCalendarEvents(matchdays: Matchday[]) {
+export async function upsertCalendarEvents(matchdays: Matchday[]) {
   try {
+    const session = await auth();
+    const token = session?.user?.id;
     const fetchPromises = matchdays.map((matchday: Matchday) => {
       const event = {
         summary: matchday.teams,
@@ -27,7 +29,7 @@ export async function createCalendarEvents(matchdays: Matchday[]) {
           headers: {
             "Content-Type": "application/json",
             //   Google Provider Token from NextAuth
-            // Authorization: "Bearer " + session?.accessToken,
+            Authorization: "Bearer " + token,
           },
           body: JSON.stringify({ event }),
         }

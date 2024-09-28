@@ -1,4 +1,4 @@
-import { createCalendarEvents } from "@/lib/createCalendarEvents";
+import { upsertCalendarEvents } from "@/lib/createCalendarEvents";
 import Header from "./Header";
 import { Button } from "./ui/button";
 import Image from "next/image";
@@ -27,7 +27,7 @@ export async function Overview() {
             <Button
               type="button"
               variant="secondary"
-              onClick={() => createCalendarEvents(matchdays)}
+              onClick={() => upsertCalendarEvents(matchdays)}
               className="flex flex-row items-center p-4 rounded-lg"
             >
               <Image

@@ -1,7 +1,7 @@
 import { eq, and, sql, gt } from "drizzle-orm";
-import { db } from "..";
-import { InsertMatch, matchesTable, SelectMatch } from "../schema";
+import { db } from "../db";
 import handleDatabaseOperation from "../operations/handleDatabaseOperation";
+import { InsertMatch, matchesTable, SelectMatch } from "../schema/teams";
 
 /**
  *
