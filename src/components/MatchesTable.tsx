@@ -1,6 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
 import {
   Table,
   TableCaption,
@@ -9,20 +8,20 @@ import {
   TableHead,
   TableBody,
   TableCell,
-  TableFooter,
 } from "@/components/ui/table";
 import { Matchday } from "@/types/matchdays";
 
 export default function MatchesTable() {
   // State consists of array of Matchdays
   const [matchdays, setMatchdays] = useState<Matchday[]>([]);
-  const { data: session } = useSession();
 
   useEffect(() => {
-    fetch("/api/scrape")
-      .then((response) => response.json())
-      //   update state
-      .then((data) => setMatchdays(data));
+    async function fetchScrapedMatches() {
+      const response = await fetch("/api/scrape");
+      const data = await response.json();
+      console.log(response, data);
+      setMatchdays(data);
+    }
   }, []);
 
   return (

@@ -1,7 +1,8 @@
 /**
  * File to schedule scraping process using croner library.
  */
-import { upsertMatch } from "@/db/queries/matches";
+
+import { upsertMatch } from "@/db/queries/match";
 import scrapeMatchdayData from "@/utils/scraping/barcelonaScraper";
 import { Cron } from "croner";
 

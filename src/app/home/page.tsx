@@ -1,27 +1,21 @@
-"use client";
 import Header from "@/components/Header";
 import Image from "next/image";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Matchday } from "@/types/matchdays";
-import { createCalendarEvents } from "@/lib/createCalendarEvents";
 import { auth } from "../../../auth";
-import { useRouter } from "next/router";
 import MatchesTable from "@/components/MatchesTable";
 
 export default async function Home() {
   const session = await auth();
+  const username = session?.user.name;
 
   return (
-    <main className="flex min-h-screen flex-col gap-16 text-black py-12 px-8 lg:px-64">
+    <main className="flex min-h-screen flex-col gap-8 text-black p-4 lg:px-64">
       <Header />
       <div className="space-y-16">
         <div className="flex flex-col items-center space-y-6  md:flex-row md:justify-between md:items-center">
-          <div className="flex flex-col space-y-2 ">
-            <h1 className="text-2xl lg:text-4xl">
-              Welcome, {session?.user?.name || "my friend"}. 👋🏼
-            </h1>
-            <h2 className="text-lg lg:text-xl">
+          <div className="flex flex-col space-y-2">
+            <h1 className="text-2xl">Welcome, {username || "my friend"}. 👋🏼</h1>
+            <h2 className="text-md lg:text-lg">
               These are your upcoming matches.
             </h2>
           </div>

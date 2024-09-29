@@ -1,17 +1,12 @@
 import React from "react";
 
-// import { CreatePost } from "~/app/_components/create-post";
-// import { api } from "~/trpc/server";
-
-const sampleClubs = [
+const clubs = [
   {
     clubId: 1,
     clubName: "FC Barcelona",
     clubLogo: "logo",
   },
 ];
-
-// const isSelected = () => {};
 
 export default function Select() {
   return (
@@ -23,7 +18,7 @@ export default function Select() {
         </h2>
 
         <ul className="flex flex-col space-y-8 md:flex-row md:space-x-4 md:space-y-0">
-          {sampleClubs.map((club) => (
+          {clubs.map((club) => (
             <li key={club.clubId}>
               <button
                 // onClick={isSelected}

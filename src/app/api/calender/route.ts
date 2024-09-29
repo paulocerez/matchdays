@@ -1,5 +1,5 @@
-import { getFutureMatches } from "@/db/queries/matches";
-import { createCalendarEvents } from "@/lib/createCalendarEvents";
+import { getFutureMatches } from "@/db/queries/match";
+import { upsertCalendarEvents } from "@/lib/createCalendarEvents";
 import withErrorHandling from "@/utils/withErrorHandling";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -8,7 +8,7 @@ export async function insertInCalendarHandler(
   req: NextRequest
 ): Promise<NextResponse> {
   const matchdays = await getFutureMatches();
-  const result = await createCalendarEvents(matchdays);
+  const result = await upsertCalendarEvents(matchdays);
   return NextResponse.json(result, { status: 200 });
 }
 

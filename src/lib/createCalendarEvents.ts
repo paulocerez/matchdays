@@ -4,7 +4,6 @@ import { auth } from "../../auth";
 export async function upsertCalendarEvents(matchdays: Matchday[]) {
   try {
     const session = await auth();
-    const token = session?.user?.id;
     const fetchPromises = matchdays.map((matchday: Matchday) => {
       const event = {
         summary: matchday.teams,

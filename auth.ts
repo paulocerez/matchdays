@@ -8,10 +8,30 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: DrizzleAdapter(db),
   callbacks: {
     // functions acting similar to middleware
+
+    // async jwt({ token, account }) {
+    //   if (account) {
+    //     token = {
+    //       ...token,
+    //       access_token: account.access_token,
+    //       refresh_token: account.refresh_token,
+    //       expires_at: account.expires_at,
+    //     };
+    //   }
+    //   return token;
+    // },
     // called when user logs in > access to session and user object from the db
-    async session({ session, user }) {
+    async session({ session, user, token }) {
       // assign id from session object to be userId
-      session.user.id = user.id;
+
+      session = {
+        ...session,
+        // access_token: token.access_token as string,
+        user: {
+          ...session.user,
+          id: user.id,
+        },
+      };
       return session;
     },
 

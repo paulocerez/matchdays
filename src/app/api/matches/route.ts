@@ -1,4 +1,4 @@
-import { getAllMatches } from "@/db/queries/matches";
+import { getAllMatches } from "@/db/queries/match";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
