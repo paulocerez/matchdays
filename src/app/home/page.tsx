@@ -1,8 +1,10 @@
+"use client";
 import Header from "@/components/Header";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { auth } from "../../../auth";
 import MatchesTable from "@/components/MatchesTable";
+import scrapeMatchdayData from "@/utils/scraping/barcelonaScraper";
 
 export default async function Home() {
   const session = await auth();
@@ -19,7 +21,7 @@ export default async function Home() {
               These are your upcoming matches.
             </h2>
           </div>
-          <div>
+          <div className="flex flex-row gap-4 items-center">
             <Button
               type="button"
               variant="secondary"
@@ -33,6 +35,13 @@ export default async function Home() {
                 className="mr-2"
               />
               Add to calendar
+            </Button>
+            <Button
+              type="button"
+              variant="secondary"
+              className="flex flex-row items-center p-4 rounded-lg"
+            >
+              Refresh changes
             </Button>
           </div>
         </div>

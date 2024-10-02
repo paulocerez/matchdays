@@ -10,5 +10,5 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const result = await scrapeMatchdayData();
   console.log(result);
-  return new NextResponse(JSON.stringify({ data: result }), { status: 200 });
+  return NextResponse.json({ data: result }, { status: 200 });
 }

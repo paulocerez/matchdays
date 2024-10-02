@@ -8,15 +8,12 @@ import {
   text,
 } from "drizzle-orm/pg-core";
 
-export const matchesTable = pgTable("match", {
+export const matches = pgTable("match", {
   id: serial("id").primaryKey(),
-  datetime: timestamp("match_datetime", {
-    precision: 6,
-    withTimezone: true,
-  }).notNull(),
+  datetime: timestamp("datetime").notNull(),
   match: text("match").notNull(),
   competition: varchar("competition").notNull(),
 });
 
-export type InsertMatch = typeof matchesTable.$inferInsert;
-export type SelectMatch = typeof matchesTable.$inferSelect;
+export type SelectMatch = typeof matches.$inferSelect;
+export type InsertMatch = typeof matches.$inferInsert;

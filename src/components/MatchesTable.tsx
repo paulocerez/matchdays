@@ -16,12 +16,14 @@ export default function MatchesTable() {
   const [matchdays, setMatchdays] = useState<Matchday[]>([]);
 
   useEffect(() => {
-    async function fetchScrapedMatches() {
-      const response = await fetch("/api/scrape");
+    async function fetchMatches() {
+      const response = await fetch("/api/matches");
       const data = await response.json();
-      console.log(response, data);
+      console.log(response);
+      console.log(data);
       setMatchdays(data);
     }
+    fetchMatches();
   }, []);
 
   return (
@@ -35,15 +37,22 @@ export default function MatchesTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {matchdays.map((matchday) => (
-          <TableRow key={matchday.id}>
-            <TableCell className="font-medium">
-              {matchday.date} {matchday.time}
-            </TableCell>
-            <TableCell>{matchday.competition}</TableCell>
-            <TableCell className="text-right">{matchday.teams}</TableCell>
-          </TableRow>
-        ))}
+        {Array.isArray(matchdays) && matchdays.length > 0 ? (
+          matchdays.map(
+            (matchday) =>
+              matchday && (
+                <TableRow key={matchday.id}>
+                  <TableCell className="font-medium">
+                    {matchday.date} {matchday.time}
+                  </TableCell>
+                  <TableCell>{matchday.competition}</TableCell>
+                  <TableCell className="text-right">{matchday.teams}</TableCell>
+                </TableRow>
+              )
+          )
+        ) : (
+          <div>No matchdays scraped yet.</div>
+        )}
       </TableBody>
     </Table>
   );

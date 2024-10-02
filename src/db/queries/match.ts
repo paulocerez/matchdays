@@ -1,7 +1,7 @@
 import { eq, and, sql, gt } from "drizzle-orm";
 import { db } from "../db";
 import handleDatabaseOperation from "../operations/handleDatabaseOperation";
-import { InsertMatch, matchesTable, SelectMatch } from "../schema/teams";
+import { InsertMatch, matches, SelectMatch } from "../schema/teams";
 
 /**
  *
@@ -9,7 +9,8 @@ import { InsertMatch, matchesTable, SelectMatch } from "../schema/teams";
  */
 export async function getAllMatches(): Promise<SelectMatch[]> {
   return handleDatabaseOperation(async () => {
-    const result = await db.select().from(matchesTable);
+    const result = await db.select().from(matches);
+    console.log(result);
     return result as SelectMatch[];
   }, "Error fetching all matches");
 }
@@ -24,8 +25,8 @@ export async function getFutureMatches(): Promise<SelectMatch[]> {
     const currentDatetime = new Date();
     const result = await db
       .select()
-      .from(matchesTable)
-      .where(gt(matchesTable.datetime, currentDatetime));
+      .from(matches)
+      .where(gt(matches.datetime, currentDatetime));
     return result as SelectMatch[];
   }, "Error fetching future matches");
 }
@@ -36,10 +37,8 @@ export async function findMatch(
 ): Promise<SelectMatch | null> {
   const result = await db
     .select()
-    .from(matchesTable)
-    .where(
-      and(eq(matchesTable.datetime, datetime), eq(matchesTable.match, match))
-    )
+    .from(matches)
+    .where(and(eq(matches.datetime, datetime), eq(matches.match, match)))
     .execute();
 
   return result.length > 0 ? result[0] : null;
@@ -47,7 +46,7 @@ export async function findMatch(
 
 export async function insertMatch(match: InsertMatch): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
-    const result = await db.insert(matchesTable).values(match).returning();
+    const result = await db.insert(matches).values(match).returning();
     return result[0];
   }, "Error inserting match");
 }
@@ -57,11 +56,7 @@ export async function updateMatch(
   match: InsertMatch
 ): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
-    await db
-      .update(matchesTable)
-      .set(match)
-      .where(eq(matchesTable.id, id))
-      .execute();
+    await db.update(matches).set(match).where(eq(matches.id, id)).execute();
     return { id, ...match };
   }, "Error updating match");
 }
