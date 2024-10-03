@@ -26,7 +26,8 @@ export async function getFutureMatches(): Promise<SelectMatch[]> {
     const result = await db
       .select()
       .from(matches)
-      .where(gt(matches.datetime, currentDatetime));
+      .where(gt(matches.datetime, currentDatetime))
+      .orderBy(matches.datetime);
     return result as SelectMatch[];
   }, "Error fetching future matches");
 }

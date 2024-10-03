@@ -13,7 +13,7 @@ const params = {
 export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
   const matches: InsertMatch[] = [];
   const response = await axios.get(
-    "https://onefootball.com/de/team/fc-bayern-muenchen-6/spiele",
+    "https://onefootball.com/de/team/fc-barcelona-5/spiele",
     params
   );
 
@@ -51,8 +51,8 @@ export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
     } else {
       console.warn("No datetime attribute found for match:", teams);
     }
-    // }
   });
+  console.log(matches);
   return matches;
 }
 
