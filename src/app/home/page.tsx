@@ -18,7 +18,6 @@ export default function Home() {
       const response = await fetch("/api/matches");
       if (!response.ok) throw new Error("Failed to fetch matches");
       const data = await response.json();
-      console.log(data);
       setMatches(data);
     } catch (err) {
       setError("Error fetching matches");

@@ -11,6 +11,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     Google({
       authorization: {
         params: {
+          prompt: "consent",
+          access_type: "offline",
           scope:
             "openid email profile https://www.googleapis.com/auth/calendar",
         },
@@ -35,7 +37,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         googleAccount.refresh_token
       ) {
         if (googleAccount.expires_at * 1000 < Date.now()) {
-          // If the access token has expired, try to refresh it
+          // refresh the token once access_token expires
+
           try {
             const response = await fetch(
               "https://oauth2.googleapis.com/token",

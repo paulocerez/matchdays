@@ -3,7 +3,7 @@
  */
 
 import { upsertMatch } from "@/db/queries/match";
-import { scrapeMatchdayData } from "@/utils/scraping/barcelonaScraper";
+import scrapeMatchdayData from "@/utils/scraping/barcelonaScraper";
 import { Cron } from "croner";
 
 /** pattern: second (0-59), minute (0-59), hour (0-23), day of month (1-31), month (1-12, JAN-DEC), day of week (0-6, SUN-Mon)

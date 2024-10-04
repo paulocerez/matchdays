@@ -10,7 +10,6 @@ import { InsertMatch, matches, SelectMatch } from "../schema/teams";
 export async function getAllMatches(): Promise<SelectMatch[]> {
   return handleDatabaseOperation(async () => {
     const result = await db.select().from(matches);
-    console.log(result);
     return result as SelectMatch[];
   }, "Error fetching all matches");
 }

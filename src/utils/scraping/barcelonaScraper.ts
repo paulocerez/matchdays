@@ -52,7 +52,6 @@ export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
       console.warn("No datetime attribute found for match:", teams);
     }
   });
-  console.log(matches);
   return matches;
 }
 

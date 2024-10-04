@@ -15,7 +15,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     oauth2Client.setCredentials({ access_token: session.accessToken });
     const calendar = google.calendar({ version: "v3", auth: oauth2Client });
     const matches = await getFutureMatches();
-    console.log(matches);
 
     const insertPromises = matches.map(async (match) => {
       const event = {
