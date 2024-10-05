@@ -1,18 +1,13 @@
-import { signOut } from "../../auth";
+"use client";
+import { signOut } from "next-auth/react";
 
 export function SignOut() {
   return (
-    <form
-    //   action={async () => {
-    //     await signOut();
-    //   }}
+    <button
+      onClick={() => signOut({ callbackUrl: "/", redirect: true })}
+      className="flex items-center justify-center text-sm border p-2 rounded-md hover:bg-gray-100 bg-white dark:bg-black"
     >
-      <button
-        type="submit"
-        className="flex items-center justify-center text-sm border p-2 rounded-md hover:bg-gray-100 bg-white dark:bg-black"
-      >
-        Log out
-      </button>
-    </form>
+      Sign out
+    </button>
   );
 }
