@@ -1,4 +1,4 @@
-import { upsertMatch } from "@/db/queries/match";
+import { upsertMatch } from "@/db/queries";
 import scrapeMatchdayData from "@/utils/scraping/barcelonaScraper";
 import { NextRequest, NextResponse } from "next/server";
 

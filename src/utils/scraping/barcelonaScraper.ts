@@ -1,4 +1,4 @@
-import { InsertMatch } from "@/db/schema";
+import { generateMatchIdentifier, InsertMatch } from "@/db/schema";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";
@@ -40,6 +40,7 @@ export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
           datetime: dateObject,
           match: teams,
           competition,
+          matchIdentifier: generateMatchIdentifier(teams, dateObject),
         });
       } else {
         console.warn(

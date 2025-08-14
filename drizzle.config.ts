@@ -1,11 +1,20 @@
 // Config for Drizzle
 import { defineConfig } from "drizzle-kit";
+import { config } from "dotenv";
+
+config({ path: ".env.local" });
+
+const databaseUrl = process.env.DATABASE_URL;
+
+if (!databaseUrl) {
+  throw new Error("DATABASE_URL is not set");
+}
 
 export default defineConfig({
-  schema: "./src/db/schema/*",
+  schema: "./src/db/schema.ts",
   out: "./migrations",
   dialect: "postgresql",
   dbCredentials: {
-    url: "postgres://default:yiAu8KWVSm0P@ep-aged-haze-a2bwcsn0-pooler.eu-central-1.aws.neon.tech:5432/verceldb?sslmode=require",
+    url: databaseUrl,
   },
 });

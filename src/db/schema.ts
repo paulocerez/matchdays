@@ -35,7 +35,7 @@ export const accounts = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-
+    type: text("type").notNull(),
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
@@ -89,10 +89,7 @@ export type InsertMatch = typeof matches.$inferInsert;
 
 // Utility functions for match identification
 export function generateMatchIdentifier(match: string, date: Date): string {
-  // Include the full datetime to detect time changes on the same date
   const dateTimeString = date.toISOString().replace(/[:.]/g, '-'); // YYYY-MM-DDTHH-MM-SS format
-  
-  // Create a unique identifier: teams + full datetime
   return `${match}_${dateTimeString}`;
 }
 

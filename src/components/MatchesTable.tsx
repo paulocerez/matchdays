@@ -11,11 +11,26 @@ import {
 } from "@/components/ui/table";
 import { SelectMatch } from "@/db/schema";
 
-interface MatchesTableProps {
-  matches: SelectMatch[];
-}
+export default function MatchesTable({ matches }: { matches: SelectMatch[] }) { 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-export default function MatchesTable({ matches }: MatchesTableProps) {
+  useEffect(() => {
+    setLoading(false);
+  }, [matches]);
+
+  if (loading) {
+    return <div className="text-center py-8">Loading matches...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-8 text-red-500">Error: {error}</div>;
+  }
+
+  if (matches.length === 0) {
+    return <div className="text-center py-8 text-gray-500">No matches found.</div>;
+  }
+
   return (
     <Table>
       <TableCaption>Your upcoming matches.</TableCaption>

@@ -6,7 +6,7 @@ import MatchesTable from "@/components/MatchesTable";
 import { useEffect, useState } from "react";
 import { SelectMatch } from "@/db/schema";
 
-export default function Home() {
+export default function Matches() {
   const [matches, setMatches] = useState<SelectMatch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

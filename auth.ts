@@ -1,8 +1,8 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { JWT } from "next-auth/jwt";
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { db } from "@/db/db";
-import { accounts } from "@/db/schema";
+import { accounts, users, sessions, verificationTokens } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 
 declare module "next-auth" {
@@ -12,20 +12,11 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    accessToken?: string;
-    refreshToken?: string;
-    accessTokenExpires?: number;
-    providerAccountId?: string;
-  }
-}
-
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
-      clientId: process.env.AUTH_GOOGLE_ID!,
-      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
       authorization: {
         params: {
           prompt: "consent",
@@ -36,111 +27,116 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  adapter: DrizzleAdapter(db),
   session: {
-    strategy: "jwt",
+    strategy: "database",
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (account && user) {
-        token.accessToken = account.access_token as string;
-        token.refreshToken = account.refresh_token as string;
-        token.user = user;
-        if (account?.expires_at) {
-          token.accessTokenExpires = account.expires_at * 1000;
-        }
+    async redirect({ url, baseUrl }) {
+      console.log("Redirect callback - URL:", url, "Base URL:", baseUrl);
+      
+      // If this is the OAuth callback, redirect to matches
+      if (url.includes('/api/auth/callback')) {
+        return `${baseUrl}/matches`;
       }
-      return token;
+      
+      // If this is the sign-in page, redirect to matches
+      if (url.includes('/api/auth/signin')) {
+        return `${baseUrl}/matches`;
+      }
+      
+      // If it's a relative URL, prepend the base URL
+      if (url.startsWith('/')) {
+        return `${baseUrl}${url}`;
+      }
+      
+      // Default: redirect to matches
+      return `${baseUrl}/matches`;
     },
-    async session({ session, token }) {
-      // Get user ID from token
-      if (token.sub) {
-        session.user.id = token.sub;
+    async session({ session, user }) {
+      console.log("Session callback - User:", user?.id, "Session user:", session.user);
+      console.log("Full session object:", session);
+      console.log("Full user object:", user);
+      
+      if (user.id) {
+        session.user.id = user.id;
+        console.log("Set session user ID to:", user.id);
+      } else {
+        console.log("No user ID found in user object");
       }
 
-      // Check if we need to refresh the token
-      if (token.accessTokenExpires && typeof token.accessTokenExpires === 'number' && Date.now() > token.accessTokenExpires) {
+      // Check if we need to refresh the access token
+      if (user.id) {
         try {
           const [googleAccount] = await db
             .select()
             .from(accounts)
             .where(
-              and(eq(accounts.provider, "google"), eq(accounts.providerAccountId, token.providerAccountId as string))
+              and(eq(accounts.userId, user.id), eq(accounts.provider, "google"))
             );
 
-          if (googleAccount && googleAccount.refresh_token) {
-            const response = await fetch(
-              "https://oauth2.googleapis.com/token",
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/x-www-form-urlencoded",
-                },
-                body: new URLSearchParams({
-                  client_id: process.env.AUTH_GOOGLE_ID!,
-                  client_secret: process.env.AUTH_GOOGLE_SECRET!,
-                  grant_type: "refresh_token",
-                  refresh_token: googleAccount.refresh_token,
-                }),
+          if (googleAccount && googleAccount.expires_at && googleAccount.refresh_token) {
+            if (googleAccount.expires_at * 1000 < Date.now()) {
+              try {
+                const response = await fetch(
+                  "https://oauth2.googleapis.com/token",
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                      client_id: process.env.GOOGLE_CLIENT_ID!,
+                      client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+                      grant_type: "refresh_token",
+                      refresh_token: googleAccount.refresh_token,
+                    }),
+                  }
+                );
+
+                const tokensOrError = await response.json();
+
+                if (!response.ok) throw tokensOrError;
+
+                const newTokens = tokensOrError as {
+                  access_token: string;
+                  expires_in: number;
+                  refresh_token?: string;
+                };
+
+                await db
+                  .update(accounts)
+                  .set({
+                    access_token: newTokens.access_token,
+                    expires_at: Math.floor(
+                      Date.now() / 1000 + newTokens.expires_in
+                    ),
+                    refresh_token:
+                      newTokens.refresh_token ?? googleAccount.refresh_token,
+                  })
+                  .where(
+                    and(
+                      eq(accounts.provider, "google"),
+                      eq(accounts.userId, user.id)
+                    )
+                  );
+
+                session.accessToken = newTokens.access_token;
+              } catch (error) {
+                console.error("Error refreshing access token", error);
+                session.error = "RefreshTokenError";
               }
-            );
-
-            const tokensOrError = await response.json();
-
-            if (!response.ok) throw tokensOrError;
-
-            const newTokens = tokensOrError as {
-              access_token: string;
-              expires_in: number;
-              refresh_token?: string;
-            };
-
-            await db
-              .update(accounts)
-              .set({
-                access_token: newTokens.access_token,
-                expires_at: Math.floor(
-                  Date.now() / 1000 + newTokens.expires_in
-                ),
-                refresh_token:
-                  newTokens.refresh_token ?? googleAccount.refresh_token,
-              })
-              .where(
-                and(
-                  eq(accounts.provider, "google"),
-                  eq(
-                    accounts.providerAccountId,
-                    googleAccount.providerAccountId
-                  )
-                )
-              );
-
-            session.accessToken = newTokens.access_token;
+            } else if (googleAccount.access_token) {
+              session.accessToken = googleAccount.access_token;
+            }
           }
         } catch (error) {
-          console.error("Error refreshing access token", error);
-          session.error = "RefreshTokenError";
+          console.error("Error checking account status", error);
         }
-      } else if (token.accessToken) {
-        session.accessToken = token.accessToken as string;
       }
 
       return session;
-    },
-    authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn = !!auth?.user;
-      const paths = ["/home"];
-      const isProtected = paths.some((path) =>
-        nextUrl.pathname.startsWith(path)
-      );
-
-      if (isProtected && !isLoggedIn) {
-        const redirectUrl = new URL("api/auth/signin", nextUrl.origin);
-        redirectUrl.searchParams.append("callbackUrl", nextUrl.href);
-        return Response.redirect(redirectUrl);
-      }
-
-      return true;
     },
   },
 });

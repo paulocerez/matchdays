@@ -9,7 +9,7 @@ import {
   users,
   generateMatchIdentifier,
 } from "./schema";
-import handleDatabaseOperation from "./operations/handleDatabaseOperation";
+import handleDatabaseOperation from "./handleDatabaseOperation";
 
 export async function createUser(data: InsertUser) {
   await db.insert(users).values(data);
