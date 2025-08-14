@@ -1,20 +1,22 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { upsertMatch } from '@/db/queries';
 import scrapeMatchdayData from '@/utils/scraping/barcelonaScraper';
 
-// Vercel Cron will call this endpoint weekly
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    console.log('❌ Unauthorized cron request attempt');
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     console.log('🚀 Vercel Cron: Starting weekly match scraping...');
-    
-    // Scrape matches
     const matches = await scrapeMatchdayData();
     console.log(`📊 Found ${matches.length} matches to process`);
     
     let inserted = 0;
     let updated = 0;
     
-    // Process each match
     for (const match of matches) {
       try {
         await upsertMatch(match);

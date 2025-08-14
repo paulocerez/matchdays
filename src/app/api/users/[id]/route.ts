@@ -1,11 +1,11 @@
 import { getUserNameAndImageByUserId } from "@/db/queries";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-): Promise<NextResponse> {
-  const userId = params.id;
+export async function GET(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+  const userId = pathname.split('/').pop();
+  
+  console.log("userId", userId);
 
   if (!userId) {
     return NextResponse.json(
@@ -13,6 +13,7 @@ export async function GET(
       { status: 400 }
     );
   }
+  
   try {
     const result = await getUserNameAndImageByUserId(userId);
     if (!result) {
