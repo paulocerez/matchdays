@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import MatchesTable from "@/components/MatchesTable";
 import { useEffect, useState } from "react";
-import { SelectMatch } from "@/db/schema/teams";
+import { SelectMatch } from "@/db/schema";
 
 export default function Home() {
   const [matches, setMatches] = useState<SelectMatch[]>([]);

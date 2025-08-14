@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { google } from "googleapis";
 import { auth } from "../../../../auth";
-import { getFutureMatches } from "@/db/queries/match";
+import { getFutureMatches } from "@/db/queries";
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
   const session = await auth();

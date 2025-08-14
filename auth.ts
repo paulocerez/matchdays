@@ -1,14 +1,31 @@
 import NextAuth from "next-auth";
 import Google from "next-auth/providers/google";
-import { DrizzleAdapter } from "@auth/drizzle-adapter";
+import { JWT } from "next-auth/jwt";
 import { db } from "@/db/db";
-import { getAccountByUserId } from "@/db/queries/account";
-import { accounts } from "@/db/schema/users";
+import { accounts } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+
+declare module "next-auth" {
+  interface Session {
+    accessToken?: string;
+    error?: string;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    accessToken?: string;
+    refreshToken?: string;
+    accessTokenExpires?: number;
+    providerAccountId?: string;
+  }
+}
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Google({
+      clientId: process.env.AUTH_GOOGLE_ID!,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET!,
       authorization: {
         params: {
           prompt: "consent",
@@ -19,27 +36,39 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  adapter: DrizzleAdapter(db),
-  // functions acting similar to middleware
+  session: {
+    strategy: "jwt",
+  },
+  secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    // called when user logs in > access to session and user object from the db
-    async session({ session, user }) {
-      const [googleAccount] = await db
-        .select()
-        .from(accounts)
-        .where(
-          and(eq(accounts.userId, user.id), eq(accounts.provider, "google"))
-        );
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        token.accessToken = account.access_token as string;
+        token.refreshToken = account.refresh_token as string;
+        token.user = user;
+        if (account?.expires_at) {
+          token.accessTokenExpires = account.expires_at * 1000;
+        }
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      // Get user ID from token
+      if (token.sub) {
+        session.user.id = token.sub;
+      }
 
-      if (
-        googleAccount &&
-        googleAccount.expires_at &&
-        googleAccount.refresh_token
-      ) {
-        if (googleAccount.expires_at * 1000 < Date.now()) {
-          // refresh the token once access_token expires
+      // Check if we need to refresh the token
+      if (token.accessTokenExpires && typeof token.accessTokenExpires === 'number' && Date.now() > token.accessTokenExpires) {
+        try {
+          const [googleAccount] = await db
+            .select()
+            .from(accounts)
+            .where(
+              and(eq(accounts.provider, "google"), eq(accounts.providerAccountId, token.providerAccountId as string))
+            );
 
-          try {
+          if (googleAccount && googleAccount.refresh_token) {
             const response = await fetch(
               "https://oauth2.googleapis.com/token",
               {
@@ -87,16 +116,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               );
 
             session.accessToken = newTokens.access_token;
-          } catch (error) {
-            console.error("Error refreshing access token", error);
-            session.error = "RefreshTokenError";
           }
-        } else if (googleAccount.access_token) {
-          session.accessToken = googleAccount.access_token;
+        } catch (error) {
+          console.error("Error refreshing access token", error);
+          session.error = "RefreshTokenError";
         }
+      } else if (token.accessToken) {
+        session.accessToken = token.accessToken as string;
       }
 
-      session.user.id = user.id;
       return session;
     },
     authorized({ auth, request: { nextUrl } }) {

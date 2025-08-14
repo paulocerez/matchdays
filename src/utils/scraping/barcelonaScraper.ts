@@ -1,4 +1,4 @@
-import { InsertMatch } from "@/db/schema/teams";
+import { InsertMatch } from "@/db/schema";
 import axios from "axios";
 import * as cheerio from "cheerio";
 import dayjs from "dayjs";

@@ -9,7 +9,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui/table";
-import { SelectMatch } from "@/db/schema/teams";
+import { SelectMatch } from "@/db/schema";
 
 interface MatchesTableProps {
   matches: SelectMatch[];

@@ -1,12 +1,23 @@
 import {
-  boolean,
-  timestamp,
-  pgTable,
-  text,
-  primaryKey,
   integer,
+  pgTable,
+  serial,
+  varchar,
+  timestamp,
+  primaryKey,
+  text,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import type { AdapterAccountType } from "next-auth/adapters";
+
+export const matches = pgTable("match", {
+  id: serial("id").primaryKey(),
+  datetime: timestamp("datetime").notNull(),
+  match: text("match").notNull(),
+  competition: varchar("competition").notNull(),
+  matchIdentifier: text("match_identifier").notNull(),
+}, (table) => ({
+  matchIdentifierIdx: uniqueIndex("match_identifier_idx").on(table.matchIdentifier),
+}));
 
 export const users = pgTable("user", {
   id: text("id")
@@ -24,7 +35,7 @@ export const accounts = pgTable(
     userId: text("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccountType>().notNull(),
+
     provider: text("provider").notNull(),
     providerAccountId: text("providerAccountId").notNull(),
     refresh_token: text("refresh_token"),
@@ -64,23 +75,6 @@ export const verificationTokens = pgTable(
   })
 );
 
-export const authenticators = pgTable("authenticator", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  credentialID: text("credentialID").notNull().unique(),
-  userId: text("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  providerAccountId: text("providerAccountId").notNull(),
-  credentialPublicKey: text("credentialPublicKey").notNull(),
-  counter: integer("counter").notNull(),
-  credentialDeviceType: text("credentialDeviceType").notNull(),
-  credentialBackedUp: boolean("credentialBackedUp").notNull(),
-  transports: text("transports"),
-});
-
-// Types
 export type InsertUser = typeof users.$inferInsert;
 export type SelectUser = typeof users.$inferSelect;
 
@@ -90,8 +84,19 @@ export type SelectAccount = typeof accounts.$inferSelect;
 export type InsertSession = typeof sessions.$inferInsert;
 export type SelectSession = typeof sessions.$inferSelect;
 
-export type InsertVerificationToken = typeof verificationTokens.$inferInsert;
-export type SelectVerificationToken = typeof verificationTokens.$inferSelect;
+export type SelectMatch = typeof matches.$inferSelect;
+export type InsertMatch = typeof matches.$inferInsert;
 
-export type InsertAuthenticator = typeof authenticators.$inferInsert;
-export type SelectAuthenticator = typeof authenticators.$inferSelect;
+// Utility functions for match identification
+export function generateMatchIdentifier(match: string, date: Date): string {
+  // Include the full datetime to detect time changes on the same date
+  const dateTimeString = date.toISOString().replace(/[:.]/g, '-'); // YYYY-MM-DDTHH-MM-SS format
+  
+  // Create a unique identifier: teams + full datetime
+  return `${match}_${dateTimeString}`;
+}
+
+export function normalizeDate(date: Date): Date {
+  // Return a new Date object with only year, month, and day (time set to 00:00:00)
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}

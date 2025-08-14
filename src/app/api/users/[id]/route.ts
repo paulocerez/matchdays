@@ -1,4 +1,4 @@
-import { getUserNameAndImageByUserId } from "@/db/queries/user";
+import { getUserNameAndImageByUserId } from "@/db/queries";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
