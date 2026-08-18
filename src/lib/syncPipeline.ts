@@ -6,6 +6,7 @@ import {
   removeCancelledMatches,
   syncMatchesToCalendar,
 } from "@/lib/calendarSync";
+import { mapWithConcurrency } from "@/lib/concurrency";
 
 export interface PipelineResult {
   scraped: number;
@@ -32,16 +33,20 @@ export async function runMatchSync(): Promise<PipelineResult> {
 
   // 2. Persist: compare against stored matches and upsert.
   const scrapedDayKeys = new Set<string>();
-  let processed = 0;
   for (const match of scraped) {
     scrapedDayKeys.add(generateMatchDayKey(match.match, match.datetime));
+  }
+
+  const upsertResults = await mapWithConcurrency(scraped, 10, async (match) => {
     try {
       await upsertMatch(match);
-      processed++;
+      return true;
     } catch (error) {
       console.error("Error upserting match:", error);
+      return false;
     }
-  }
+  });
+  const processed = upsertResults.filter(Boolean).length;
 
   // 3. Reconcile Google Calendar (single connected account).
   let calendar: PipelineResult["calendar"];

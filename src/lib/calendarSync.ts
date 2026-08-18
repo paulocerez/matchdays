@@ -5,8 +5,10 @@ import {
   deleteMatch,
 } from "@/db/queries";
 import { generateMatchDayKey, SelectMatch } from "@/db/schema";
+import { mapWithConcurrency } from "@/lib/concurrency";
 
 const MATCH_DURATION_MS = 2 * 60 * 60 * 1000; // assume 2 hours
+const CONCURRENCY = 10; // parallel calendar/DB operations per batch
 
 export interface SyncSummary {
   inserted: number;
@@ -57,7 +59,7 @@ export async function syncMatchesToCalendar(
     errors: [],
   };
 
-  for (const match of matches) {
+  const outcomes = await mapWithConcurrency(matches, CONCURRENCY, async (match) => {
     try {
       if (!match.googleEventId) {
         const res = await calendar.events.insert({
@@ -66,9 +68,12 @@ export async function syncMatchesToCalendar(
         });
         if (res.data.id) {
           await setMatchCalendarSync(match.id, res.data.id, match.datetime);
-          summary.inserted++;
+          return "inserted" as const;
         }
-      } else if (
+        return "skipped" as const;
+      }
+
+      if (
         !match.syncedDatetime ||
         match.syncedDatetime.getTime() !== match.datetime.getTime()
       ) {
@@ -77,21 +82,24 @@ export async function syncMatchesToCalendar(
           eventId: match.googleEventId,
           requestBody: eventBody(match),
         });
-        await setMatchCalendarSync(
-          match.id,
-          match.googleEventId,
-          match.datetime
-        );
-        summary.updated++;
-      } else {
-        summary.skipped++;
+        await setMatchCalendarSync(match.id, match.googleEventId, match.datetime);
+        return "updated" as const;
       }
+
+      return "skipped" as const;
     } catch (error) {
       summary.errors.push({
         match: match.match,
         error: error instanceof Error ? error.message : String(error),
       });
+      return "error" as const;
     }
+  });
+
+  for (const outcome of outcomes) {
+    if (outcome === "inserted") summary.inserted++;
+    else if (outcome === "updated") summary.updated++;
+    else if (outcome === "skipped") summary.skipped++;
   }
 
   return summary;
@@ -108,14 +116,14 @@ export async function removeCancelledMatches(
 ): Promise<{ deleted: number; errors: { match: string; error: string }[] }> {
   const calendar = calendarClient(accessToken);
   const futureMatches = await getFutureMatches();
+  const cancelled = futureMatches.filter(
+    (m) => !scrapedDayKeys.has(generateMatchDayKey(m.match, m.datetime))
+  );
 
   let deleted = 0;
   const errors: { match: string; error: string }[] = [];
 
-  for (const match of futureMatches) {
-    const key = generateMatchDayKey(match.match, match.datetime);
-    if (scrapedDayKeys.has(key)) continue;
-
+  await mapWithConcurrency(cancelled, CONCURRENCY, async (match) => {
     try {
       if (match.googleEventId) {
         await calendar.events.delete({
@@ -131,7 +139,7 @@ export async function removeCancelledMatches(
         error: error instanceof Error ? error.message : String(error),
       });
     }
-  }
+  });
 
   return { deleted, errors };
 }

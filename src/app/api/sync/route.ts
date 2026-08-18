@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "../../../../auth";
 import { runMatchSync } from "@/lib/syncPipeline";
 
+export const maxDuration = 60;
+
 // Manual "sync now" trigger — runs the same full pipeline as the weekly cron,
 // but gated on a signed-in session instead of the CRON_SECRET.
 export async function POST(): Promise<NextResponse> {
