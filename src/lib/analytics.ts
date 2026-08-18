@@ -8,7 +8,9 @@ export interface MatchOutcome {
   id: number;
   datetime: Date;
   competition: string;
+  competitionEmblem: string | null;
   opponent: string;
+  opponentCrest: string | null;
   isHome: boolean;
   goalsFor: number;
   goalsAgainst: number;
@@ -32,7 +34,11 @@ export interface Metrics {
 
 export interface Analytics {
   overall: Metrics;
-  byCompetition: { competition: string; metrics: Metrics }[];
+  byCompetition: {
+    competition: string;
+    emblem: string | null;
+    metrics: Metrics;
+  }[];
   home: Metrics;
   away: Metrics;
   form: Result[]; // most recent first, up to 5
@@ -60,6 +66,7 @@ export function toOutcome(match: SelectMatch): MatchOutcome | null {
   const goalsFor = isHome ? match.homeScore : match.awayScore;
   const goalsAgainst = isHome ? match.awayScore : match.homeScore;
   const opponent = isHome ? away : home;
+  const opponentCrest = isHome ? match.awayCrest : match.homeCrest;
 
   const result: Result =
     goalsFor > goalsAgainst ? "W" : goalsFor < goalsAgainst ? "L" : "D";
@@ -68,7 +75,9 @@ export function toOutcome(match: SelectMatch): MatchOutcome | null {
     id: match.id,
     datetime: match.datetime,
     competition: match.competition,
+    competitionEmblem: match.competitionEmblem,
     opponent,
+    opponentCrest,
     isHome,
     goalsFor,
     goalsAgainst,
@@ -131,6 +140,7 @@ export function computeAnalytics(finished: SelectMatch[]): Analytics {
   const byCompetition = [...byCompMap.entries()]
     .map(([competition, list]) => ({
       competition,
+      emblem: list[0]?.competitionEmblem ?? null,
       metrics: computeMetrics(list),
     }))
     .sort((a, b) => b.metrics.played - a.metrics.played);

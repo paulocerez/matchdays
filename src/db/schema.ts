@@ -20,6 +20,9 @@ export const matches = pgTable("match", {
   status: varchar("status").notNull().default("SCHEDULED"),
   homeScore: integer("home_score"),
   awayScore: integer("away_score"),
+  homeCrest: text("home_crest"),
+  awayCrest: text("away_crest"),
+  competitionEmblem: text("competition_emblem"),
 }, (table) => ({
   matchIdentifierIdx: uniqueIndex("match_identifier_idx").on(table.matchIdentifier),
 }));

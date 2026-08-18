@@ -58,7 +58,15 @@ export default function Matches() {
 
         <div className="mt-10 flex items-end justify-between gap-3 sm:mt-12">
           <div className="min-w-0">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <h1 className="flex items-center gap-2.5 text-2xl font-semibold tracking-tight sm:text-3xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="https://crests.football-data.org/81.png"
+                alt="FC Barcelona"
+                width={32}
+                height={32}
+                className="h-7 w-7 shrink-0 object-contain sm:h-8 sm:w-8"
+              />
               Fixtures
             </h1>
             <p className="mt-1 text-sm text-muted-foreground">
@@ -74,7 +82,7 @@ export default function Matches() {
             type="button"
             onClick={handleSync}
             disabled={syncing || initialLoading}
-            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-3.5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all hover:opacity-90 active:scale-[0.99] disabled:opacity-50 sm:py-2"
+            className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#004D98] px-3.5 py-2.5 text-sm font-medium text-white shadow-sm transition-all hover:opacity-90 active:scale-[0.99] disabled:opacity-50 sm:py-2"
           >
             <RefreshCw
               className={`h-4 w-4 sm:h-3.5 sm:w-3.5 ${

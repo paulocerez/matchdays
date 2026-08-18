@@ -15,7 +15,7 @@ export default function Header() {
     <header className="flex items-center justify-between">
       <div className="flex items-center gap-4 sm:gap-6">
         <Link href="/matches" className="flex items-center gap-2.5">
-          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-[13px] font-bold text-primary-foreground">
+          <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#A50044] text-[13px] font-bold text-white">
             M
           </span>
           <span className="text-sm font-semibold tracking-tight">Matchdays</span>

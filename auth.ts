@@ -28,8 +28,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   adapter: DrizzleAdapter(db),
+  trustHost: true,
   session: {
     strategy: "database",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+    updateAge: 24 * 60 * 60, // refresh the session cookie at most once a day
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {

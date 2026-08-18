@@ -62,15 +62,20 @@ function Section({
 
 function CompetitionRow({
   competition,
+  emblem,
   metrics,
 }: {
   competition: string;
+  emblem: string | null;
   metrics: Metrics;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 px-4 py-3">
       <div className="min-w-0">
-        <div className="truncate text-sm font-medium">{competition}</div>
+        <div className="flex items-center gap-1.5 text-sm font-medium">
+          <Crest src={emblem} alt={competition} />
+          <span className="truncate">{competition}</span>
+        </div>
         <div className="mt-0.5 text-xs text-muted-foreground">
           {metrics.played} played · {metrics.goalsFor}-{metrics.goalsAgainst} GF/GA
         </div>
@@ -103,19 +108,38 @@ function SplitCard({ label, metrics }: { label: string; metrics: Metrics }) {
   );
 }
 
+function Crest({ src, alt }: { src: string | null; alt: string }) {
+  if (!src) return null;
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={alt}
+      width={16}
+      height={16}
+      loading="lazy"
+      className="h-4 w-4 shrink-0 object-contain"
+    />
+  );
+}
+
 function ResultItem({ outcome }: { outcome: MatchOutcome }) {
   return (
     <div className="flex items-center gap-3 px-4 py-3">
       <ResultBadge result={outcome.result} />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-sm">
+        <div className="flex items-center gap-1.5 text-sm">
           <span className="text-muted-foreground">
             {outcome.isHome ? "vs" : "@"}
-          </span>{" "}
-          <span className="font-medium">{outcome.opponent}</span>
+          </span>
+          <Crest src={outcome.opponentCrest} alt={outcome.opponent} />
+          <span className="truncate font-medium">{outcome.opponent}</span>
         </div>
-        <div className="mt-0.5 text-xs text-muted-foreground">
-          {dateFmt.format(new Date(outcome.datetime))} · {outcome.competition}
+        <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <span>{dateFmt.format(new Date(outcome.datetime))}</span>
+          <span>·</span>
+          <Crest src={outcome.competitionEmblem} alt={outcome.competition} />
+          <span className="truncate">{outcome.competition}</span>
         </div>
       </div>
       <div className="shrink-0 text-sm font-semibold tabular-nums">
@@ -170,6 +194,7 @@ export default function StatsDashboard({ data }: { data: Analytics }) {
               <CompetitionRow
                 key={c.competition}
                 competition={c.competition}
+                emblem={c.emblem}
                 metrics={c.metrics}
               />
             ))}

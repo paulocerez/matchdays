@@ -16,12 +16,13 @@ const LOOKAHEAD_DAYS = 300;
 interface FootballDataTeam {
   name: string;
   shortName: string | null;
+  crest: string | null;
 }
 
 interface FootballDataMatch {
   utcDate: string;
   status: string;
-  competition: { name: string };
+  competition: { name: string; emblem: string | null };
   homeTeam: FootballDataTeam;
   awayTeam: FootballDataTeam;
   score: {
@@ -87,6 +88,9 @@ export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
       status: m.status,
       homeScore: m.score?.fullTime?.home ?? null,
       awayScore: m.score?.fullTime?.away ?? null,
+      homeCrest: m.homeTeam.crest ?? null,
+      awayCrest: m.awayTeam.crest ?? null,
+      competitionEmblem: m.competition.emblem ?? null,
     });
   }
 
