@@ -135,8 +135,12 @@ export async function updateMatch(
       matchIdentifier: generateMatchIdentifier(match.match, match.datetime),
     };
     
-    await db.update(matches).set(matchWithIdentifier).where(eq(matches.id, id)).execute();
-    return { id, ...matchWithIdentifier };
+    const result = await db
+      .update(matches)
+      .set(matchWithIdentifier)
+      .where(eq(matches.id, id))
+      .returning();
+    return result[0];
   }, "Error updating match");
 }
 
@@ -144,14 +148,39 @@ export async function upsertMatch(match: InsertMatch): Promise<SelectMatch> {
   return handleDatabaseOperation(async () => {
     // First, try to find a match with the same teams on the same date (ignoring time)
     const existingMatch = await findMatchByTeamsAndDate(match.match, match.datetime);
-    
+
     if (existingMatch) {
-      // Match exists for the same teams on the same date, update it
-      // This handles time changes, competition updates, etc.
+      // Match exists for the same teams on the same date, update it.
+      // This handles time changes, competition updates, etc. Preserve the
+      // existing calendar-sync state so the sync step can detect a time change.
       return await updateMatch(existingMatch.id, match);
     } else {
       // New match, insert it
       return await insertMatch(match);
     }
   }, "Error upserting match");
+}
+
+/**
+ * Records the Google Calendar event id and the datetime that was pushed to the
+ * calendar for a match, so future syncs know whether an update is needed.
+ */
+export async function setMatchCalendarSync(
+  id: number,
+  googleEventId: string,
+  syncedDatetime: Date
+): Promise<void> {
+  return handleDatabaseOperation(async () => {
+    await db
+      .update(matches)
+      .set({ googleEventId, syncedDatetime })
+      .where(eq(matches.id, id))
+      .execute();
+  }, "Error updating match calendar sync state");
+}
+
+export async function deleteMatch(id: number): Promise<void> {
+  return handleDatabaseOperation(async () => {
+    await db.delete(matches).where(eq(matches.id, id)).execute();
+  }, "Error deleting match");
 }

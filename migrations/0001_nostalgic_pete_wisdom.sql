@@ -25,8 +25,8 @@ CREATE TABLE IF NOT EXISTS "verificationToken" (
 	CONSTRAINT "verificationToken_identifier_token_pk" PRIMARY KEY("identifier","token")
 );
 --> statement-breakpoint
-DROP TABLE "teams_table";--> statement-breakpoint
 DROP TABLE "userteams_table";--> statement-breakpoint
+DROP TABLE "teams_table";--> statement-breakpoint
 ALTER TABLE "matches_table" RENAME TO "match";--> statement-breakpoint
 ALTER TABLE "users_table" RENAME TO "user";--> statement-breakpoint
 ALTER TABLE "match" RENAME COLUMN "match_datetime" TO "datetime";--> statement-breakpoint

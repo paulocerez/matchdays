@@ -15,6 +15,8 @@ export const matches = pgTable("match", {
   match: text("match").notNull(),
   competition: varchar("competition").notNull(),
   matchIdentifier: text("match_identifier").notNull(),
+  googleEventId: text("google_event_id"),
+  syncedDatetime: timestamp("synced_datetime"),
 }, (table) => ({
   matchIdentifierIdx: uniqueIndex("match_identifier_idx").on(table.matchIdentifier),
 }));
@@ -96,4 +98,11 @@ export function generateMatchIdentifier(match: string, date: Date): string {
 export function normalizeDate(date: Date): Date {
   // Return a new Date object with only year, month, and day (time set to 00:00:00)
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+// Stable key used to match a scraped fixture against a stored row, mirroring the
+// upsert dedup logic (same teams on the same calendar day, ignoring kickoff time).
+export function generateMatchDayKey(match: string, date: Date): string {
+  const day = date.toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+  return `${match}_${day}`;
 }

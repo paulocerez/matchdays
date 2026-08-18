@@ -54,8 +54,26 @@ export default function Matches() {
       if (!response.ok) throw new Error("Failed to add matches to calendar");
       const results = await response.json();
       console.log("Calendar insertion results:", results);
+      await fetchMatches();
     } catch (err) {
       setError("Error adding matches to calendar");
+      console.error(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSyncNow = async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const response = await fetch("/api/sync", { method: "POST" });
+      if (!response.ok) throw new Error("Failed to sync matches");
+      const result = await response.json();
+      console.log("Sync result:", result);
+      await fetchMatches();
+    } catch (err) {
+      setError("Error syncing matches");
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -97,6 +115,14 @@ export default function Matches() {
               disabled={isLoading}
             >
               {isLoading ? "Scraping..." : "Scrape matches"}
+            </Button>
+            <Button
+              type="button"
+              className="flex flex-row items-center p-4 rounded-lg"
+              onClick={handleSyncNow}
+              disabled={isLoading}
+            >
+              {isLoading ? "Syncing..." : "Sync now"}
             </Button>
           </div>
         </div>
