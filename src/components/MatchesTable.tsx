@@ -69,7 +69,7 @@ export default function MatchesTable({ matches }: { matches: SelectMatch[] }) {
               return (
                 <div
                   key={match.id}
-                  className={`group flex items-center gap-4 px-4 py-3.5 transition-colors hover:bg-foreground/[0.03] ${
+                  className={`group flex items-center gap-3 px-3 py-3 transition-colors hover:bg-foreground/[0.03] sm:gap-4 sm:px-4 sm:py-3.5 ${
                     i > 0 ? "border-t border-border" : ""
                   }`}
                 >
@@ -85,13 +85,14 @@ export default function MatchesTable({ matches }: { matches: SelectMatch[] }) {
                   <div className="h-8 w-px bg-border" />
 
                   <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2 text-sm">
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm">
                       <TeamName name={home} />
                       <span className="text-xs text-muted-foreground">vs</span>
                       <TeamName name={away} />
                     </div>
                     <div className="mt-0.5 text-xs tabular-nums text-muted-foreground">
                       {timeFmt.format(date)}
+                      <span className="sm:hidden"> · {match.competition}</span>
                     </div>
                   </div>
 
