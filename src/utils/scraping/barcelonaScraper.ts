@@ -1,57 +1,68 @@
 import { generateMatchIdentifier, InsertMatch } from "@/db/schema";
-import axios from "axios";
-import * as cheerio from "cheerio";
-import dayjs from "dayjs";
 
-const params = {
-  headers: {
-    "User-Agent":
-      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36",
-  },
-};
+// FC Barcelona's team id on football-data.org.
+const BARCELONA_TEAM_ID = 81;
+const API_BASE = "https://api.football-data.org/v4";
 
+interface FootballDataTeam {
+  name: string;
+  shortName: string | null;
+}
+
+interface FootballDataMatch {
+  utcDate: string;
+  status: string;
+  competition: { name: string };
+  homeTeam: FootballDataTeam;
+  awayTeam: FootballDataTeam;
+}
+
+function teamLabel(team: FootballDataTeam): string {
+  return team.shortName ?? team.name;
+}
+
+/**
+ * Fetches FC Barcelona's upcoming fixtures from football-data.org and maps them
+ * onto the InsertMatch shape used by the sync pipeline. Replaces the old
+ * OneFootball HTML scraper, which broke once fixtures moved to client-side
+ * rendering.
+ */
 export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
-  const matches: InsertMatch[] = [];
-  const response = await axios.get(
-    "https://onefootball.com/de/team/fc-barcelona-5/spiele",
-    params
+  const token = process.env.FOOTBALL_DATA_API_TOKEN;
+  if (!token) {
+    throw new Error("FOOTBALL_DATA_API_TOKEN is not set");
+  }
+
+  const response = await fetch(
+    `${API_BASE}/teams/${BARCELONA_TEAM_ID}/matches?status=SCHEDULED`,
+    { headers: { "X-Auth-Token": token } }
   );
 
-  const html = response.data;
-  const $ = cheerio.load(html);
+  if (!response.ok) {
+    const body = await response.text();
+    throw new Error(
+      `football-data.org request failed (${response.status}): ${body}`
+    );
+  }
 
-  $("article.SimpleMatchCard_simpleMatchCard__yTuUP").each((_, element) => {
-    const $element = $(element);
-    const $timeElement = $element.find("time");
-    const datetimeAttribute = $timeElement.attr("datetime");
-    const competition = $element.find("footer p").text().trim();
-    const teams = $element
-      .find(".SimpleMatchCardTeam_simpleMatchCardTeam__name__7Ud8D")
-      .map((_, el) => $(el).text().trim())
-      .get()
-      .join(" : ");
+  const data = (await response.json()) as { matches: FootballDataMatch[] };
 
-    if (datetimeAttribute) {
-      const dateObject = new Date(datetimeAttribute); // convert to Date
-
-      // Check if the date is valid
-      if (!isNaN(dateObject.getTime())) {
-        matches.push({
-          datetime: dateObject,
-          match: teams,
-          competition,
-          matchIdentifier: generateMatchIdentifier(teams, dateObject),
-        });
-      } else {
-        console.warn(
-          "Invalid date format for match:",
-          teams,
-          datetimeAttribute
-        );
-      }
-    } else {
-      console.warn("No datetime attribute found for match:", teams);
+  const matches: InsertMatch[] = [];
+  for (const m of data.matches ?? []) {
+    const datetime = new Date(m.utcDate);
+    if (isNaN(datetime.getTime())) {
+      console.warn("Invalid utcDate for match:", m.utcDate);
+      continue;
     }
-  });
+
+    const teams = `${teamLabel(m.homeTeam)} : ${teamLabel(m.awayTeam)}`;
+    matches.push({
+      datetime,
+      match: teams,
+      competition: m.competition.name,
+      matchIdentifier: generateMatchIdentifier(teams, datetime),
+    });
+  }
+
   return matches;
 }
