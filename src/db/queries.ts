@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { and, eq, gt, lt } from "drizzle-orm";
+import { and, desc, eq, gt, lt } from "drizzle-orm";
 import {
   accounts,
   InsertMatch,
@@ -61,6 +61,21 @@ export async function getFutureMatches(): Promise<SelectMatch[]> {
       .orderBy(matches.datetime);
     return result as SelectMatch[];
   }, "Error fetching future matches");
+}
+
+/**
+ * Fetches finished matches (with final scores) most-recent first, for analytics
+ * and the results feed.
+ */
+export async function getFinishedMatches(): Promise<SelectMatch[]> {
+  return handleDatabaseOperation(async () => {
+    const result = await db
+      .select()
+      .from(matches)
+      .where(eq(matches.status, "FINISHED"))
+      .orderBy(desc(matches.datetime));
+    return result as SelectMatch[];
+  }, "Error fetching finished matches");
 }
 
 export async function findMatch(

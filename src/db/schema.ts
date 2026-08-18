@@ -17,6 +17,9 @@ export const matches = pgTable("match", {
   matchIdentifier: text("match_identifier").notNull(),
   googleEventId: text("google_event_id"),
   syncedDatetime: timestamp("synced_datetime"),
+  status: varchar("status").notNull().default("SCHEDULED"),
+  homeScore: integer("home_score"),
+  awayScore: integer("away_score"),
 }, (table) => ({
   matchIdentifierIdx: uniqueIndex("match_identifier_idx").on(table.matchIdentifier),
 }));

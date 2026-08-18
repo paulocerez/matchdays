@@ -4,6 +4,15 @@ import { generateMatchIdentifier, InsertMatch } from "@/db/schema";
 const BARCELONA_TEAM_ID = 81;
 const API_BASE = "https://api.football-data.org/v4";
 
+// Competitions the free tier exposes for Barça. Add cup codes here (e.g. "CDR")
+// once a paid plan unlocks them.
+const COMPETITIONS = "PD,CL";
+
+// Window for the request. Covers the current season's results plus upcoming
+// fixtures, kept within the API's 750-day range limit.
+const LOOKBACK_DAYS = 400;
+const LOOKAHEAD_DAYS = 300;
+
 interface FootballDataTeam {
   name: string;
   shortName: string | null;
@@ -15,17 +24,25 @@ interface FootballDataMatch {
   competition: { name: string };
   homeTeam: FootballDataTeam;
   awayTeam: FootballDataTeam;
+  score: {
+    fullTime: { home: number | null; away: number | null };
+  };
 }
 
 function teamLabel(team: FootballDataTeam): string {
   return team.shortName ?? team.name;
 }
 
+function isoDate(date: Date): string {
+  return date.toISOString().slice(0, 10);
+}
+
 /**
- * Fetches FC Barcelona's upcoming fixtures from football-data.org and maps them
- * onto the InsertMatch shape used by the sync pipeline. Replaces the old
- * OneFootball HTML scraper, which broke once fixtures moved to client-side
- * rendering.
+ * Fetches FC Barcelona's fixtures and results (La Liga + Champions League) from
+ * football-data.org and maps them onto the InsertMatch shape used by the sync
+ * pipeline. Includes finished matches with final scores so the analytics layer
+ * can compute season metrics. Only future SCHEDULED matches reach the calendar,
+ * because the calendar sync filters on datetime > now.
  */
 export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
   const token = process.env.FOOTBALL_DATA_API_TOKEN;
@@ -33,10 +50,16 @@ export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
     throw new Error("FOOTBALL_DATA_API_TOKEN is not set");
   }
 
-  const response = await fetch(
-    `${API_BASE}/teams/${BARCELONA_TEAM_ID}/matches?status=SCHEDULED`,
-    { headers: { "X-Auth-Token": token } }
-  );
+  const now = new Date();
+  const dateFrom = new Date(now.getTime() - LOOKBACK_DAYS * 86400000);
+  const dateTo = new Date(now.getTime() + LOOKAHEAD_DAYS * 86400000);
+
+  const url =
+    `${API_BASE}/teams/${BARCELONA_TEAM_ID}/matches` +
+    `?competitions=${COMPETITIONS}` +
+    `&dateFrom=${isoDate(dateFrom)}&dateTo=${isoDate(dateTo)}`;
+
+  const response = await fetch(url, { headers: { "X-Auth-Token": token } });
 
   if (!response.ok) {
     const body = await response.text();
@@ -61,6 +84,9 @@ export default async function scrapeMatchdayData(): Promise<InsertMatch[]> {
       match: teams,
       competition: m.competition.name,
       matchIdentifier: generateMatchIdentifier(teams, datetime),
+      status: m.status,
+      homeScore: m.score?.fullTime?.home ?? null,
+      awayScore: m.score?.fullTime?.away ?? null,
     });
   }
 
